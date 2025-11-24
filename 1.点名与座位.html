@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>学生点名与座位记录系统</title>
+    <link rel="stylesheet" href="css/reset.css">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+    <nav class="float-nav">
+        <ul>
+            <li><a href="1.点名与座位.html">点名与座位</a></li>
+            <li><a href="2.出勤记录.html">出勤记录</a></li>
+            <li><a href="3.班级数据管理.html">班级管理</a></li>
+        </ul>
+    </nav>
+    <div id="container" class="container">
+        <div class="left-panel">
+            <h2>班级选择</h2>
+            <select id="classMode" title="班级选择" class="class-mode">
+                <option value="">请选择</option>
+            </select>
+            <h2>学生名单</h2>
+            <div id="studentList" class="student-list"></div>
+            <button id="rollCallBtn" class="rollCall-btn">点名</button>
+            <button id="saveBtn" class="save-btn">保存出勤记录与座位布局</button>
+            <div id="rollCallResult" class="rollCall-result"></div>
+        </div>
+        <div class="right-panel">
+            <h2>座位布局
+                <input type="date" id="dateToday" class="date-today">
+                <button id="loadSeatBtn" class="toggle-button">载入座位</button>
+                <button id="importSeatBtn" class="toggle-button">导入座位</button>
+                <span class="layout-controls">
+                    <label>行数: <input type="number" id="rowInput" min="1" max="15" value="11" class="layout-input"></label>
+                    <label>列数: <input type="number" id="colInput" min="1" max="15" value="12" class="layout-input"></label>
+                    <label>过道位置: <input type="text" id="aisleInput" placeholder="在第几列前加过道，如: 3,6" class="layout-input-aisle" title="在指定列前面添加过道。例如: 3,6 表示在第3列和第6列前面各加一个过道"></label>
+                    <button id="createLayoutBtn" class="toggle-button">创建布局</button>
+                </span>
+            </h2>
+            <div id="seatLayout" class="seat-layout"></div>
+            <h2>出勤记录<div id="trashBin" class="trash-bin">🗑️</div></h2>
+            <div class="attendance-record">
+                <div class="attendance-title"></div>
+                <div id="attendanceArea" class="attendance-area"></div>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/main.js"></script>
+</body>
+
+</html>

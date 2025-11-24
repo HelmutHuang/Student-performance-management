@@ -1,0 +1,313 @@
+/* 容器布局 */
+.container {
+    display: flex;
+    justify-content: center;
+    min-height: 100vh;
+}
+
+/* 左侧面板 */
+.left-panel {
+    box-sizing: border-box;
+    width: 320px;
+    padding: 20px;
+    background-color: antiquewhite;
+}
+
+.left-panel h2 {
+    margin-bottom: 10px;
+}
+
+/* 班级选择 */
+.class-mode {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 20px;
+    border: 1px solid #ccc;
+}
+
+/* 学生名单 */
+.student-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 3px;
+    margin-bottom: 20px;
+}
+
+.student-list .student {
+    background-color: teal;
+    color: white;
+    padding: 4px;
+    border-radius: 4px;
+}
+
+.student-list .student:hover {
+    background-color: crimson;
+    cursor: pointer;
+}
+
+.student.disabled {
+    background-color: gray;
+    cursor: not-allowed;
+}
+
+.student.green {
+    background-color: greenyellow;
+    color: black;
+}
+
+/* 点名按钮 */
+.rollCall-btn {
+    width: 100%;
+    padding: 10px;
+    background-color: crimson;
+    color: white;
+}
+
+/* 点名结果 */
+.rollCall-result {
+    margin-top: 10px;
+    text-align: center;
+    font-size: 36px;
+    color: crimson;
+}
+
+/* 保存按钮 */
+.save-btn {
+    width: 100%;
+    margin-top: 10px;
+    padding: 10px;
+    background-color: teal;
+    color: #fff;
+}
+
+.rollCall-btn:hover,
+.save-btn:hover {
+    opacity: 0.8;
+    cursor: pointer;
+}
+
+/* 右侧面板 */
+.right-panel {
+    box-sizing: border-box;
+    width: 1000px;
+    overflow: hidden;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+}
+
+.right-panel h2 {
+    color: white;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 5px;
+}
+
+/* 日期选择 */
+.date-today {
+    width: 100px;
+    padding: 5px;
+    margin: 0 10px;
+}
+
+/* 切换按钮 */
+.toggle-button {
+    padding: 5px;
+    margin-right: 5px;
+    background-color: white;
+}
+
+/* 布局控制 */
+.layout-controls {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    margin-left: 15px;
+}
+
+.layout-controls label {
+    color: white;
+    font-size: 14px;
+    white-space: nowrap;
+}
+
+.layout-input {
+    width: 50px;
+    padding: 2px 5px;
+    margin-left: 5px;
+    border: 1px solid #ccc;
+    border-radius: 3px;
+    font-size: 12px;
+}
+
+.layout-input-aisle {
+    width: 80px;
+    padding: 2px 5px;
+    margin-left: 5px;
+    border: 1px solid #ccc;
+    border-radius: 3px;
+    font-size: 12px;
+}
+
+/* 座位布局 */
+.seat-layout {
+    display: grid;
+    grid-template-columns: repeat(8, 1fr);
+    grid-template-rows: repeat(7, 40px);
+    gap: 8px;
+    margin-bottom: 20px;
+}
+
+.seat {
+    background-color: antiquewhite;
+    border-radius: 6px;
+    height: 40px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+}
+
+.seat .row-number {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: rgba(128, 128, 128, 0.3);
+    font-size: 14px;
+    font-weight: bold;
+    pointer-events: none;
+    z-index: 1;
+}
+
+.seat:has(.student) .row-number {
+    display: none;
+}
+
+/* Fallback for browsers that don't support :has() */
+.seat.has-student .row-number {
+    display: none;
+}
+
+.seat .student {
+    height: 40px;
+    line-height: 40px;
+    text-align: center;
+}
+
+.seat:hover,
+.toggle-button:hover,
+.attendance-category .student:hover {
+    background-color: crimson;
+    color: white;
+    cursor: pointer;
+}
+
+.special-seat {
+    background-color: lightyellow;
+}
+
+/* 过道样式 - 不可见的座位用于创建过道效果 */
+.aisle {
+    background-color: transparent;
+    border: none;
+    pointer-events: none;
+    visibility: hidden;
+}
+
+/* 出勤记录 */
+.attendance-record {
+    border: 1px dashed #eee;
+    border-radius: 20px;
+    padding: 20px;
+}
+
+.attendance-title,
+.attendance-area {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 10px;
+}
+
+.attendance-title h3 {
+    text-align: center;
+    color: #eee;
+    margin: 5px 0;
+}
+
+.attendance-title h3:hover {
+    background-color: rgba(255, 255, 255, 0.2);
+    border-radius: 5px;
+}
+
+.trash-bin {
+    width: 120px;
+    height: 40px;
+    text-align: center;
+    line-height: 40px;
+    background-color: crimson;
+    border-radius: 20px;
+    float: right;
+    cursor: pointer;
+}
+
+.attendance-category {
+    background-color: #eee;
+    min-height: 45px;
+    padding: 6px 10px;
+    border-radius: 5px;
+    text-align: center;
+    gap: 3px;
+}
+
+.attendance-category:hover {
+    background-color: antiquewhite;
+}
+
+.attendance-category .student {
+    float: left;
+    padding: 2px 4px;
+    border-radius: 3px;
+}
+
+/* 浮动导航栏 */
+.float-nav {
+    position: fixed;
+    left: -100px;
+    top: 20px;
+    background-color: rgba(0, 128, 128, 0.9);
+    padding: 10px;
+    border-radius: 0 8px 8px 0;
+    box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
+    transition: left 0.3s ease;
+    z-index: 1000;
+}
+
+.float-nav:hover {
+    left: 0;
+}
+
+.float-nav ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.float-nav li {
+    margin: 10px 0;
+}
+
+.float-nav a {
+    color: white;
+    text-decoration: none;
+    display: block;
+    padding: 5px 10px;
+    transition: all 0.3s;
+}
+
+.float-nav a:hover {
+    background-color: rgba(255, 255, 255, 0.2);
+    transform: translateX(5px);
+}

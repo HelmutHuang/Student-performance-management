@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>班级数据管理</title>
+    <link rel="stylesheet" href="css/reset.css">
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+            background-color: teal;
+        }
+        .container {
+            display: flex;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: antiquewhite;
+            min-height: 100vh;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+            gap: 20px;
+        }
+        .left-panel {
+            width: 400px;
+            padding: 20px;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+        .right-panel {
+            flex: 1;
+            padding: 20px;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            color: #333;
+            margin-top: 0;
+            padding-bottom: 15px;
+            border-bottom: 2px solid teal;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: bold;
+        }
+        input, textarea {
+            width: 100%;
+            padding: 10px;
+            box-sizing: border-box;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+        input:focus, textarea:focus {
+            outline: none;
+            border-color: teal;
+            box-shadow: 0 0 5px rgba(0, 128, 128, 0.3);
+        }
+        .student-list {
+            margin-top: 15px;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 8px;
+        }
+        .student-item {
+            display: flex;
+            align-items: center;
+            background-color: white;
+            padding: 8px;
+            border-radius: 6px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        .student-item input {
+            flex: 1;
+            margin-right: 10px;
+            border: none;
+            background: transparent;
+        }
+        .class-list {
+            margin-top: 30px;
+        }
+        .class-item {
+            background-color: white;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+        .class-item h3 {
+            margin-top: 0;
+            color: teal;
+        }
+        .btn {
+            padding: 10px 20px;
+            background-color: teal;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+        .btn:hover {
+            opacity: 0.9;
+            transform: translateY(-1px);
+        }
+        .btn-danger {
+            background-color: crimson;
+        }
+        .btn-secondary {
+            background-color: #666;
+        }
+        .btn-secondary:hover {
+            background-color: #555;
+        }
+        .class-list ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 10px;
+        }
+        .class-list ul li {
+            background-color: #f5f5f5;
+            padding: 8px;
+            border-radius: 4px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <nav class="float-nav">
+        <ul>
+            <li><a href="1.点名与座位.html">点名与座位</a></li>
+            <li><a href="2.出勤记录.html">出勤记录</a></li>
+            <li><a href="3.班级数据管理.html">班级管理</a></li>
+        </ul>
+    </nav>
+    <div class="container">
+        <!-- 左侧面板：新增班级和学生名单 -->
+        <div class="left-panel">
+            <h2>新增班级</h2>
+            <div class="form-group">
+                <label for="className">班级名称：</label>
+                <input type="text" id="className" placeholder="例如：C240307">
+            </div>
+            
+            <div class="form-group">
+                <label>学生名单：</label>
+                <div class="form-group">
+                    <textarea id="bulkStudents" placeholder="可以从Excel复制多行学生名单，每行一个学生" style="height: 100px;"></textarea>
+                    <button class="btn btn-secondary" onclick="importStudents()">批量导入</button>
+                    <button class="btn" onclick="addClass()">添加班级</button>
+                </div>
+                <div class="student-list" id="studentList"></div>
+            </div>
+        </div>
+
+        <!-- 右侧面板：班级管理 -->
+        <div class="right-panel">
+            <h2>班级管理</h2>
+            <div class="class-list" id="classList"></div>
+        </div>
+    </div>
+
+    <script>
+        // 初始化时从localStorage读取数据
+        let classes = JSON.parse(localStorage.getItem('classes') || '[]');
+
+        // 批量导入学生
+        function importStudents() {
+            const bulkInput = document.getElementById('bulkStudents').value;
+            if (!bulkInput.trim()) {
+                alert('请粘贴学生名单');
+                return;
+            }
+
+            // 解析输入，支持换行和制表符分隔
+            const names = bulkInput.split(/[\n\t]/)
+                .map(name => name.trim())
+                .filter(name => name);
+
+            if (names.length === 0) {
+                alert('未检测到有效学生姓名');
+                return;
+            }
+
+            // 清空现有输入
+            const studentList = document.getElementById('studentList');
+            studentList.innerHTML = '';
+
+            // 添加所有学生
+            names.forEach(name => {
+                const newStudent = document.createElement('div');
+                newStudent.className = 'student-item';
+                newStudent.innerHTML = `
+                    <input type="text" class="studentName" value="${name}">
+                    <button class="btn btn-danger" onclick="removeStudent(this)">删除</button>
+                `;
+                studentList.appendChild(newStudent);
+            });
+
+            // 清空批量输入框
+            document.getElementById('bulkStudents').value = '';
+        }
+
+        // 删除学生输入框
+        function removeStudent(button) {
+            const studentItem = button.parentElement;
+            studentItem.remove();
+        }
+
+        // 添加班级
+        function addClass() {
+            const className = document.getElementById('className').value;
+            const studentNames = Array.from(document.querySelectorAll('.studentName'))
+                .map(input => input.value.trim())
+                .filter(name => name);
+
+            if (!className || studentNames.length === 0) {
+                alert('请填写班级名称和学生名单');
+                return;
+            }
+
+            // 检查是否已存在同名班级
+            const existingIndex = classes.findIndex(c => c.class === className);
+            if (existingIndex !== -1) {
+                const confirmOverwrite = confirm(`班级 ${className} 已存在，是否覆盖？`);
+                if (!confirmOverwrite) {
+                    return; // 用户选择取消
+                }
+                // 覆盖现有班级
+                classes[existingIndex] = {
+                    class: className,
+                    name: studentNames
+                };
+            } else {
+                // 添加新班级
+                classes.push({
+                    class: className,
+                    name: studentNames
+                });
+            }
+            
+            // 按班级名称排序
+            classes.sort((a, b) => a.class.localeCompare(b.class));
+            
+            // 保存到localStorage
+            localStorage.setItem('classes', JSON.stringify(classes));
+
+            // 清空表单
+            document.getElementById('className').value = '';
+            const studentList = document.getElementById('studentList');
+            studentList.innerHTML = '<div class="student-item">' +
+                '<input type="text" class="studentName" placeholder="学生姓名">' +
+                '<button class="btn btn-danger" onclick="removeStudent(this)">删除</button>' +
+                '</div>';
+
+            // 更新显示
+            displayClasses();
+        }
+
+        // 显示所有班级（按班级名称排序）
+        function displayClasses() {
+            const sortedClasses = [...classes].sort((a, b) => a.class.localeCompare(b.class));
+            const classList = document.getElementById('classList');
+            classList.innerHTML = sortedClasses.map((cls, index) => `
+                <div class="class-item">
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <h3>${cls.class} (${cls.name.length}人)</h3>
+                        <button class="btn btn-danger" onclick="removeClass(${index})">删除班级</button>
+                    </div>
+                    <ul>
+                        ${cls.name.map(name => `<li>${name}</li>`).join('')}
+                    </ul>
+                </div>
+            `).join('');
+        }
+
+        // 删除班级并更新localStorage
+        function removeClass(index) {
+            classes.splice(index, 1);
+            localStorage.setItem('classes', JSON.stringify(classes));
+            displayClasses();
+        }
+
+        // 显示已有班级数据
+        function showClassData() {
+            displayClasses();
+        }
+        // 页面加载时显示已有数据
+        showClassData();
+    </script>
+</body>
+</html>
