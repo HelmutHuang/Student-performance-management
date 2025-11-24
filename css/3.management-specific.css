@@ -1,0 +1,158 @@
+/* ==================================== */
+/* 3.班级数据管理.html 专属样式 - 统一结构 */
+/* ==================================== */
+
+/* 修正 1: 移除 left-panel 的背景色覆盖，使其继承 antiquewhite (来自 style.css) */
+.left-panel {
+    /* 继承 style.css 的 antiquewhite 背景 */
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    box-sizing: border-box; 
+}
+/* 保持 right-panel 为白色作为内容区背景 */
+.right-panel {
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    box-sizing: border-box; 
+}
+
+/* 修正 2: 统一主按钮样式 (.btn, .btn-secondary) 为 100% 宽度，独占一行 */
+/* 这与 Page 1 的主要按钮风格一致 */
+.form-group > .btn, 
+.form-group > .btn-secondary {
+    width: 100%; 
+    display: block; /* 独占一行 */
+    box-sizing: border-box;
+    margin-top: 10px; 
+    padding: 10px 10px; 
+    border-radius: 6px;
+    font-size: 14px;
+    background-color: var(--primary-color); /* teal */
+    color: var(--white-color);
+}
+/* 单独处理批量导入按钮的背景色 */
+.form-group > .btn-secondary {
+    background-color: #666; /* 灰色 */
+}
+/* 确保按钮在文本区域后是 block 元素 */
+.form-group > textarea {
+    margin-bottom: 0;
+}
+
+
+/* 表单输入样式 (保持不变) */
+.form-group {
+    margin-bottom: 20px;
+}
+label {
+    display: block;
+    margin-bottom: 8px;
+    color: #333;
+    font-weight: bold;
+}
+input, textarea {
+    width: 100%;
+    padding: 10px;
+    box-sizing: border-box;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    font-size: 14px;
+}
+input:focus, textarea:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 5px rgba(0, 128, 128, 0.3);
+}
+
+/* 左侧面板：学生输入列表 */
+.student-list {
+    margin-top: 15px;
+    display: flex; 
+    flex-wrap: wrap;
+    gap: 8px;
+    max-height: 250px;
+    overflow-y: auto;
+}
+.student-item {
+    display: flex;
+    align-items: center;
+    background-color: #f5f5f5;
+    padding: 4px 8px;
+    border-radius: 6px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    min-width: 100px;
+}
+.student-item input {
+    flex: 1;
+    margin-right: 5px;
+    border: none;
+    background: transparent;
+    padding: 0;
+}
+
+/* 修正 3: 删除按钮样式统一 */
+/* 学生列表中的删除按钮 (小按钮) */
+.student-item .btn-danger {
+    background-color: var(--accent-color); /* crimson */
+    color: var(--white-color);
+    font-size: 12px;
+    padding: 2px 5px; 
+    border-radius: 3px;
+    flex-shrink: 0; 
+}
+/* 右侧面板中的删除班级按钮 (大按钮，匹配右侧面板的流式布局) */
+.class-item .btn-danger {
+    background-color: var(--accent-color); /* crimson */
+    color: var(--white-color);
+    font-size: 14px;
+    padding: 8px 15px; 
+    border-radius: 6px;
+    flex-shrink: 0;
+}
+/* 确保按钮通用 hover 效果 (继承自 style.css 的 .btn) */
+.btn {
+    transition: background-color 0.3s, opacity 0.3s;
+}
+.btn:hover {
+    opacity: 0.9;
+}
+.btn-danger:hover {
+    background-color: darkred; /* 确保危险按钮有明显的 hover 效果 */
+}
+
+/* 右侧面板：班级管理列表样式调整 (保持不变) */
+.class-list {
+    margin-top: 10px;
+    border-radius: 5px;
+    height: calc(100vh - 160px);
+    overflow-y: auto;
+}
+.class-item {
+    background-color: var(--light-background);
+    padding: 15px;
+    margin-bottom: 15px;
+    border-radius: 6px;
+    box-shadow: none; 
+}
+.class-item h3 {
+    margin-top: 0;
+    color: var(--primary-color);
+}
+.class-list ul {
+    list-style: none;
+    padding: 0;
+    margin-top: 10px;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+    gap: 8px;
+}
+.class-list ul li {
+    background-color: var(--primary-color);
+    color: var(--white-color);
+    padding: 6px;
+    border-radius: 3px;
+    text-align: center;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}

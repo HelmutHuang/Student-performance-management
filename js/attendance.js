@@ -1,0 +1,519 @@
+document.addEventListener('DOMContentLoaded', () => {
+    const classes = JSON.parse(localStorage.getItem('classes')) || [];
+    const classSelect = document.getElementById("classSelect");
+    const modal = document.getElementById("studentModal");
+    const closeBtn = document.querySelector(".close-btn");
+    const allAttendanceBtn = document.getElementById("allAttendanceBtn");
+    const allAttendanceModal = document.getElementById("allAttendanceModal");
+    const allAttendanceCloseBtn = document.querySelector(".all-attendance-close-btn");
+    const copyAllAttendanceTableBtn = document.getElementById("copyAllAttendanceTableBtn");
+
+    // 关闭弹窗
+    closeBtn.addEventListener('click', () => {
+        modal.style.display = "none";
+    });
+
+    // 点击弹窗外部关闭弹窗
+    window.addEventListener('click', (e) => {
+        if (e.target === modal) {
+            modal.style.display = "none";
+        }
+    });
+
+    // 全部出勤按钮事件
+    allAttendanceBtn.addEventListener('click', () => {
+        showAllAttendanceRecords();
+    });
+
+    // 关闭全部出勤弹窗
+    allAttendanceCloseBtn.addEventListener('click', () => {
+        allAttendanceModal.style.display = "none";
+    });
+
+    // 点击全部出勤弹窗外部关闭弹窗
+    window.addEventListener('click', (e) => {
+        if (e.target === allAttendanceModal) {
+            allAttendanceModal.style.display = "none";
+        }
+    });
+
+    // 复制表格按钮事件
+    copyAllAttendanceTableBtn.addEventListener('click', () => {
+        copyAllAttendanceRecordsToClipboard();
+    });
+
+    initClassSelect(classes, classSelect);
+
+    classSelect.addEventListener('change', (e) => {
+        const selectedClass = e.target.value;
+        if (!selectedClass) {
+            // 隐藏复制按钮当没有选择班级时
+            // 注意: copyScoresBtn 变量未定义，这里使用 allAttendanceBtn 来处理显示状态
+            document.getElementById('allAttendanceBtn').style.display = 'none';
+            document.querySelector('#student-list-table tbody').innerHTML = '';
+            document.querySelector('.record-container').innerHTML = '';
+            return;
+        }
+
+        const records = JSON.parse(localStorage.getItem(selectedClass)) || [];
+        displayRecords(records);
+        displayStudentList(selectedClass);
+    });
+});
+
+function initClassSelect(classes, classSelect) {
+    classes.forEach(cls => {
+        const option = document.createElement('option');
+        option.value = cls.class;
+        option.textContent = cls.class;
+        classSelect.appendChild(option);
+    });
+}
+
+function displayRecords(records) {
+    const container = document.querySelector('.record-container');
+    container.innerHTML = '';
+
+    records.forEach(record => {
+        const card = document.createElement('div');
+        card.className = 'record-card';
+
+        const date = document.createElement('div');
+        date.className = 'record-date';
+        date.textContent = `日期：${record.date}`;
+
+        const deleteBtn = document.createElement('button');
+        deleteBtn.className = 'delete-btn';
+        deleteBtn.textContent = '删除';
+        deleteBtn.addEventListener('click', () => {
+            if (confirm('确定要删除这条记录吗？')) {
+                const selectedClass = document.getElementById("classSelect").value;
+                const updatedRecords = records.filter(r => r.date !== record.date);
+                localStorage.setItem(selectedClass, JSON.stringify(updatedRecords));
+                displayRecords(updatedRecords);
+                // 重新显示学生列表以更新分数
+                displayStudentList(selectedClass); 
+            }
+        });
+        date.appendChild(deleteBtn);
+
+        const details = document.createElement('div');
+        details.className = 'record-details';
+
+        Object.entries(record.attendance).forEach(([category, students]) => {
+            const studentCount = {};
+            students.forEach(student => {
+                if (studentCount[student]) {
+                    studentCount[student]++;
+                } else {
+                    studentCount[student] = 1;
+                }
+            });
+
+            const formattedStudents = Object.entries(studentCount).map(([student, count]) => {
+                return count > 1 ? `${student}x${count}` : student;
+            });
+
+            const categoryDiv = document.createElement('div');
+            categoryDiv.className = 'record-category';
+            categoryDiv.innerHTML = `<strong>${category}</strong>: ${formattedStudents.join('、')}`;
+            details.appendChild(categoryDiv);
+        });
+
+        card.appendChild(date);
+        card.appendChild(details);
+        container.appendChild(card);
+    });
+}
+
+function displayStudentList(selectedClass) {
+    const classData = JSON.parse(localStorage.getItem('classes')).find(cls => cls.class === selectedClass);
+    if (!classData) return;
+
+    const tableBody = document.querySelector('#student-list-table tbody');
+    tableBody.innerHTML = '';
+
+    const attendanceCategories = JSON.parse(localStorage.getItem('attendanceCategories')) || [];
+    const records = JSON.parse(localStorage.getItem(selectedClass)) || [];
+
+    // 获取学生额外加分数据
+    const bonusScores = JSON.parse(localStorage.getItem(`${selectedClass}_bonus`)) || {};
+
+    const studentScores = [];
+
+    classData.name.forEach(student => {
+        let totalScore = 100;
+        let baseScore = 100; // 记录基础分数
+        
+        records.forEach(record => {
+            Object.entries(record.attendance).forEach(([category, students]) => {
+                const categoryData = attendanceCategories.find(cat => cat.category === category);
+                if (categoryData) {
+                    students.forEach(attendingStudent => {
+                        if (attendingStudent === student) {
+                            baseScore -= categoryData.score;
+                        }
+                    });
+                }
+            });
+        });
+
+        // 添加额外加分
+        const bonusScore = bonusScores[student] || 0;
+        totalScore = baseScore + bonusScore;
+
+        studentScores.push({ student, totalScore, baseScore, bonusScore });
+    });
+
+    // 新的最终分数计算方法：基于满分群体平均分的线性缩放
+
+    // 1. 找出所有原始分数超过100分的学生
+    const highScoreStudents = studentScores.filter(score => score.totalScore > 100);
+
+    // 2. 计算满分群体平均分（Benchmark）
+    let benchmark = 100; // 默认值，如果没有超过100分的学生
+    if (highScoreStudents.length > 0) {
+        const sumHighScores = highScoreStudents.reduce((sum, student) => sum + student.totalScore, 0);
+        benchmark = sumHighScores / highScoreStudents.length;
+    }
+
+    // 3. 计算缩放因子（ScaleFactor）
+    const scaleFactor = 100 / benchmark;
+
+    studentScores.forEach(({ student, totalScore, baseScore, bonusScore }, index) => {
+        const row = document.createElement('tr');
+        const numberCell = document.createElement('td');
+        const nameCell = document.createElement('td');
+        const scoreCell = document.createElement('td');
+        const finalScoreCell = document.createElement('td');
+        const actionCell = document.createElement('td');
+
+        numberCell.textContent = index + 1;
+
+        // 为学生姓名添加点击事件和样式
+        nameCell.textContent = student;
+        nameCell.className = 'student-name';
+        nameCell.addEventListener('click', () => {
+            showStudentAttendanceSummary(student, selectedClass);
+        });
+
+        // 显示原始分数和额外加分（如果有）
+        if (bonusScore > 0) {
+            scoreCell.innerHTML = `${baseScore}<span class="bonus-score">+${bonusScore}</span>`;
+        } else if (bonusScore < 0) {
+            scoreCell.innerHTML = `${baseScore}<span class="bonus-score">${bonusScore}</span>`;
+        } else {
+            scoreCell.textContent = totalScore;
+        }
+
+        // 4. 计算所有学生的最终成绩（FinalScore）
+        let finalScore = Math.round(totalScore * scaleFactor);
+
+        // 最终分数大于100分则为100
+        finalScore = Math.min(100, finalScore);
+        // 确保最终分数不小于0
+        finalScore = Math.max(0, finalScore);
+
+        finalScoreCell.textContent = finalScore.toFixed(0);
+
+        // 添加加分按钮
+        const bonusBtn = document.createElement('button');
+        bonusBtn.className = 'bonus-btn';
+        bonusBtn.textContent = '修改';
+        bonusBtn.addEventListener('click', () => {
+            const currentBonus = bonusScores[student] || 0;
+            const input = prompt(`为 ${student} 加分，当前额外加分：${currentBonus}\n请输入新的加分值（正数为加分，负数为减分）：`);
+
+            if (input !== null) {
+                const bonusValue = parseInt(input);
+                if (!isNaN(bonusValue)) {
+                    // 更新加分数据
+                    bonusScores[student] = bonusValue;
+                    localStorage.setItem(`${selectedClass}_bonus`, JSON.stringify(bonusScores));
+
+                    // 重新显示学生列表
+                    displayStudentList(selectedClass);
+                } else {
+                    alert('请输入有效的数字！');
+                }
+            }
+        });
+
+        actionCell.appendChild(bonusBtn);
+
+        row.appendChild(numberCell);
+        row.appendChild(nameCell);
+        row.appendChild(scoreCell);
+        row.appendChild(finalScoreCell);
+        row.appendChild(actionCell);
+
+        tableBody.appendChild(row);
+    });
+
+    // 显示全部出勤按钮（当有学生数据时）
+    const allAttendanceBtn = document.getElementById('allAttendanceBtn');
+    if (studentScores.length > 0) {
+        allAttendanceBtn.style.display = 'inline-block';
+    } else {
+        allAttendanceBtn.style.display = 'none';
+    }
+}
+
+// 显示学生考勤汇总
+function showStudentAttendanceSummary(studentName, selectedClass) {
+    const modal = document.getElementById("studentModal");
+    const summaryContainer = document.getElementById("attendanceSummary");
+    const modalTitle = document.querySelector(".modal-title");
+
+    modalTitle.textContent = `${studentName} - 考勤汇总`;
+    summaryContainer.innerHTML = '';
+
+    const records = JSON.parse(localStorage.getItem(selectedClass)) || [];
+    const attendanceCategories = JSON.parse(localStorage.getItem('attendanceCategories')) || [];
+
+    // 初始化考勤统计
+    const attendanceSummary = {};
+    attendanceCategories.forEach(cat => {
+        attendanceSummary[cat.category] = 0;
+    });
+
+    // 统计每种考勤类型的次数
+    records.forEach(record => {
+        Object.entries(record.attendance).forEach(([category, students]) => {
+            if (students.includes(studentName)) {
+                attendanceSummary[category] = (attendanceSummary[category] || 0) + 1;
+            }
+        });
+    });
+
+    // 创建汇总项
+    Object.entries(attendanceSummary).forEach(([category, count]) => {
+        if (count > 0) {
+            const summaryItem = document.createElement('div');
+            summaryItem.className = 'summary-item';
+
+            const countElement = document.createElement('div');
+            countElement.className = 'summary-count';
+            countElement.textContent = count;
+
+            const labelElement = document.createElement('div');
+            labelElement.className = 'summary-label';
+            labelElement.textContent = category;
+
+            summaryItem.appendChild(countElement);
+            summaryItem.appendChild(labelElement);
+            summaryContainer.appendChild(summaryItem);
+        }
+    });
+
+    // 如果没有任何考勤记录
+    if (Object.values(attendanceSummary).every(count => count === 0)) {
+        const noRecordItem = document.createElement('div');
+        noRecordItem.style.textAlign = 'center';
+        noRecordItem.style.gridColumn = '1 / -1';
+        noRecordItem.textContent = '该学生没有任何考勤记录';
+        summaryContainer.appendChild(noRecordItem);
+    }
+
+    // 显示弹窗
+    modal.style.display = "block";
+}
+
+// 复制全部出勤表格到剪贴板
+function copyAllAttendanceRecordsToClipboard() {
+    const tableContainer = document.getElementById('allAttendanceTableContainer');
+    const table = tableContainer.querySelector('table');
+    
+    if (!table) {
+        alert('没有表格数据可复制！');
+        return;
+    }
+    
+    // 获取表格的所有行
+    const rows = table.querySelectorAll('tr');
+    let csvContent = '';
+    
+    // 遍历所有行和单元格，构建CSV格式
+    rows.forEach((row) => {
+        const cells = row.querySelectorAll('th, td');
+        const rowData = [];
+        
+        cells.forEach(cell => {
+            // 获取单元格文本内容并处理特殊字符
+            let cellText = cell.textContent.trim();
+            // 如果内容包含逗号、换行符或双引号，需要用双引号包围并转义双引号
+            if (cellText.includes(',') || cellText.includes('\n') || cellText.includes('"')) {
+                cellText = `"${cellText.replace(/"/g, '""')}"`;
+            }
+            rowData.push(cellText);
+        });
+        
+        csvContent += rowData.join('\t') + '\n'; // 使用制表符分隔，便于Excel粘贴
+    });
+    
+    // 复制到剪贴板
+    navigator.clipboard.writeText(csvContent).then(() => {
+        // 显示一个临时提示
+        const notification = document.createElement('div');
+        notification.textContent = '已复制表格到剪贴板！';
+        notification.style.position = 'fixed';
+        notification.style.bottom = '20px';
+        notification.style.right = '20px';
+        notification.style.backgroundColor = 'teal';
+        notification.style.color = 'white';
+        notification.style.padding = '10px 20px';
+        notification.style.borderRadius = '5px';
+        notification.style.zIndex = '1000';
+        notification.style.transition = 'opacity 0.5s';
+        notification.style.boxShadow = '0 2px 8px rgba(0,0,0,0.2)';
+        
+        document.body.appendChild(notification);
+        
+        // 3秒后淡出提示
+        setTimeout(() => {
+            notification.style.opacity = '0';
+            setTimeout(() => {
+                if (document.body.contains(notification)) {
+                    document.body.removeChild(notification);
+                }
+            }, 500);
+        }, 3000);
+    }).catch(err => {
+        console.error('复制失败:', err);
+        alert('复制失败，请重试！');
+    });
+}
+
+// 显示全部出勤记录
+function showAllAttendanceRecords() {
+    const selectedClass = document.getElementById("classSelect").value;
+    if (!selectedClass) {
+        alert('请先选择班级');
+        return;
+    }
+
+    const classData = JSON.parse(localStorage.getItem('classes')).find(cls => cls.class === selectedClass);
+    if (!classData) return;
+
+    const attendanceCategories = JSON.parse(localStorage.getItem('attendanceCategories')) || [];
+    const records = JSON.parse(localStorage.getItem(selectedClass)) || [];
+    const bonusScores = JSON.parse(localStorage.getItem(`${selectedClass}_bonus`)) || {};
+
+    // 计算每个学生的各项考勤次数
+    const studentAttendance = {};
+    classData.name.forEach(student => {
+        studentAttendance[student] = {};
+        attendanceCategories.forEach(category => {
+            studentAttendance[student][category.category] = 0;
+        });
+    });
+
+    // 统计每个学生的考勤情况
+    records.forEach(record => {
+        Object.entries(record.attendance).forEach(([category, students]) => {
+            students.forEach(student => {
+                if (studentAttendance[student]) {
+                    studentAttendance[student][category] = (studentAttendance[student][category] || 0) + 1;
+                }
+            });
+        });
+    });
+
+    // 计算每个学生的分数
+    const studentScores = [];
+    classData.name.forEach((student, index) => {
+        let totalScore = 100;
+        let bonusScore = bonusScores[student] || 0;
+
+        // 计算扣分
+        attendanceCategories.forEach(categoryData => {
+            const count = studentAttendance[student][categoryData.category] || 0;
+            totalScore -= count * categoryData.score;
+        });
+
+        // 添加加分
+        totalScore += bonusScore;
+
+        studentScores.push({
+            index: index + 1,
+            name: student,
+            bonus: bonusScore,
+            late: studentAttendance[student]['迟'] || 0,
+            leave: studentAttendance[student]['假'] || 0,
+            absent: studentAttendance[student]['旷'] || 0,
+            sleep: studentAttendance[student]['睡'] || 0,
+            play: studentAttendance[student]['玩'] || 0,
+            totalScore: totalScore,
+        });
+    });
+
+    // 新的最终分数计算方法：基于满分群体平均分的线性缩放
+    // 1. 找出所有原始分数超过100分的学生
+    const highScoreStudents = studentScores.filter(score => score.totalScore > 100);
+
+    // 2. 计算满分群体平均分（Benchmark）
+    let benchmark = 100; // 默认值，如果没有超过100分的学生
+    if (highScoreStudents.length > 0) {
+        const sumHighScores = highScoreStudents.reduce((sum, student) => sum + student.totalScore, 0);
+        benchmark = sumHighScores / highScoreStudents.length;
+    }
+
+    // 3. 计算缩放因子（ScaleFactor）
+    const scaleFactor = 100 / benchmark;
+
+    // 4. 计算所有学生的最终成绩（FinalScore）
+    studentScores.forEach(student => {
+        let finalScore = Math.round(student.totalScore * scaleFactor);
+        // 最终分数大于100分则为100
+        finalScore = Math.min(100, finalScore);
+        // 确保最终分数不小于0
+        finalScore = Math.max(0, finalScore);
+        student.finalScore = finalScore;
+    });
+
+    // 生成表格HTML
+    let tableHTML = `
+        <table class="all-attendance-table">
+            <thead>
+                <tr>
+                    <th>序号</th>
+                    <th>姓名</th>
+                    <th>加分</th>
+                    <th>迟到</th>
+                    <th>请假</th>
+                    <th>旷课</th>
+                    <th>睡觉</th>
+                    <th>玩手机/游戏</th>
+                    <th>统计分数</th>
+                    <th>最终成绩</th>
+                </tr>
+            </thead>
+            <tbody>
+    `;
+
+    studentScores.forEach(student => {
+        tableHTML += `
+            <tr>
+                <td>${student.index}</td>
+                <td>${student.name}</td>
+                <td>${student.bonus}</td>
+                <td>${student.late}</td>
+                <td>${student.leave}</td>
+                <td>${student.absent}</td>
+                <td>${student.sleep}</td>
+                <td>${student.play}</td>
+                <td>${student.totalScore}</td>
+                <td>${student.finalScore}</td>
+            </tr>
+        `;
+    });
+
+    tableHTML += `
+            </tbody>
+        </table>
+    `;
+
+    // 显示表格
+    document.getElementById('allAttendanceTableContainer').innerHTML = tableHTML;
+    document.getElementById('allAttendanceModal').style.display = 'block';
+}

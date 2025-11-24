@@ -1,0 +1,102 @@
+/* 优化：引入 CSS 变量，便于主题管理 */
+:root {
+    --primary-color: teal;
+    --accent-color: crimson;
+    --light-background: antiquewhite;
+    --text-color: #333;
+    --white-color: white;
+}
+
+/* 容器布局 (Common) */
+.container {
+    display: flex;
+    justify-content: center;
+    min-height: 100vh;
+}
+
+/* 左侧面板 (Common) */
+.left-panel {
+    box-sizing: border-box;
+    width: 320px;
+    padding: 20px;
+    background-color: var(--light-background);
+}
+
+.left-panel h2 {
+    margin-bottom: 10px;
+}
+
+/* 右侧面板 (Common) */
+.right-panel {
+    box-sizing: border-box;
+    width: 1000px;
+    overflow: hidden;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+}
+
+.right-panel h2 {
+    color: var(--white-color);
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 5px;
+}
+
+/* 班级选择 (Common) */
+.class-mode {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 20px;
+    border: 1px solid #ccc;
+}
+
+/* 按钮基础样式 (Common) */
+.toggle-button {
+    padding: 5px;
+    margin-right: 5px;
+    background-color: var(--white-color);
+}
+.toggle-button:hover {
+    background-color: var(--accent-color);
+    color: var(--white-color);
+    cursor: pointer;
+}
+
+/* 浮动导航栏 (Common) */
+.float-nav {
+    position: fixed;
+    left: -100px;
+    top: 20px;
+    background-color: rgba(0, 128, 128, 0.9);
+    padding: 10px;
+    border-radius: 0 8px 8px 0;
+    box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
+    transition: left 0.3s ease;
+    z-index: 1000;
+}
+.float-nav:hover {
+    left: 0;
+}
+.float-nav ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+.float-nav li {
+    margin: 10px 0;
+}
+.float-nav a {
+    color: var(--white-color);
+    text-decoration: none;
+    display: block;
+    padding: 5px 10px;
+    transition: all 0.3s;
+}
+.float-nav a:hover {
+    background-color: rgba(255, 255, 255, 0.2);
+    transform: translateX(5px);
+}

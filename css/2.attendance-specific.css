@@ -1,0 +1,263 @@
+/* ==================================== */
+/* 2.出勤记录.html 专属样式 */
+/* ==================================== */
+
+.record-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 20px;
+    user-select: text;
+    -webkit-user-select: text;
+    -moz-user-select: text;
+    -ms-user-select: text;
+}
+
+.record-card {
+    border: 1px solid #ddd;
+    padding: 15px;
+    border-radius: 5px;
+    background: var(--light-background); /* 使用变量 */
+}
+
+.record-date {
+    font-weight: bold;
+    color: var(--accent-color); /* 使用变量 */
+    margin-bottom: 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.delete-btn {
+    background: var(--accent-color); /* 使用变量 */
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    border-radius: 3px;
+    cursor: pointer;
+    font-size: 12px;
+}
+
+.delete-btn:hover {
+    background: darkred;
+}
+
+.record-details {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+}
+
+.student-list-container {
+    max-height: 500px;
+    overflow-y: auto;
+}
+
+.student-list-table {
+    width: 100%;
+    text-align: center;
+}
+
+.student-name {
+    cursor: pointer;
+    color: #0066cc;
+    text-decoration: underline;
+}
+
+.student-name:hover {
+    color: #004080;
+}
+
+/* 弹窗样式 */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+}
+
+.modal-content {
+    background-color: #fff;
+    margin: 10% auto;
+    padding: 20px;
+    border-radius: 5px;
+    width: 80%;
+    max-width: 600px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #ddd;
+}
+
+.modal-title {
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: #333;
+}
+
+.close-btn {
+    font-size: 1.5rem;
+    font-weight: bold;
+    cursor: pointer;
+    color: #777;
+}
+
+.close-btn:hover {
+    color: #000;
+}
+
+.attendance-summary {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 15px;
+}
+
+.summary-item {
+    background-color: #f5f5f5;
+    padding: 10px;
+    border-radius: 5px;
+    text-align: center;
+}
+
+.summary-count {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: var(--accent-color); /* 使用变量 */
+}
+
+.summary-label {
+    font-size: 0.9rem;
+    color: #555;
+}
+
+/* 加分按钮样式 */
+.bonus-btn {
+    background: cadetblue;
+    color: white;
+    border: none;
+    padding: 2px 8px;
+    border-radius: 3px;
+    cursor: pointer;
+    font-size: 12px;
+    margin-left: 5px;
+}
+
+.bonus-btn:hover {
+    opacity: 0.8;
+}
+
+/* 加分值显示 */
+.bonus-score {
+    color: cadetblue;
+    font-weight: bold;
+}
+
+/* 复制成绩按钮样式 */
+.copy-scores-btn {
+    background: var(--primary-color); /* 使用变量 */
+    color: white;
+    border: none;
+    padding: 5px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 12px;
+    margin-left: 10px;
+    vertical-align: middle;
+}
+
+.copy-scores-btn:hover {
+    opacity: 0.8;
+}
+
+/* 全部出勤弹窗样式 */
+.all-attendance-modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+}
+
+.all-attendance-modal-content {
+    background-color: #fff;
+    margin: 2% auto;
+    padding: 20px;
+    border-radius: 5px;
+    width: 95%;
+    max-width: 1200px;
+    max-height: 85vh;
+    overflow-y: auto;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.all-attendance-modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #ddd;
+}
+
+.all-attendance-modal-title {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #333;
+}
+
+.all-attendance-close-btn {
+    font-size: 1.8rem;
+    font-weight: bold;
+    cursor: pointer;
+    color: #777;
+}
+
+.all-attendance-close-btn:hover {
+    color: #000;
+}
+
+.all-attendance-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 15px;
+}
+
+.all-attendance-table th,
+.all-attendance-table td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: center;
+}
+
+.all-attendance-table th {
+    background-color: #f2f2f2;
+    font-weight: bold;
+}
+
+.all-attendance-table tr:nth-child(even) {
+    background-color: #f9f9f9;
+}
+
+.all-attendance-table tr:hover {
+    background-color: #f5f5f5;
+}
+
+/* 学生名单标题容器 */
+.student-list-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}

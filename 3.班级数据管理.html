@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>班级数据管理</title>
+    <link rel="stylesheet" href="css/reset.css">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/3.management-specific.css">
+</head>
+
+<body>
+    <nav class="float-nav">
+        <ul>
+            <li><a href="1.点名与座位.html">点名与座位</a></li>
+            <li><a href="2.出勤记录.html">出勤记录</a></li>
+            <li><a href="3.班级数据管理.html">班级管理</a></li>
+        </ul>
+    </nav>
+    <div class="container">
+        <div class="left-panel">
+            <h2>新增班级</h2>
+            <div class="form-group">
+                <label for="className">班级名称：</label>
+                <input type="text" id="className" placeholder="例如：C240307">
+            </div>
+
+            <div class="form-group">
+                <label>学生名单：</label>
+                <textarea id="bulkStudents" placeholder="可以从Excel复制多行学生名单，每行一个学生" style="height: 100px;"></textarea>
+                <button class="btn btn-secondary" onclick="importStudents()">批量导入</button>
+                <button class="btn" onclick="addClass()">添加班级</button>
+            </div>
+
+            <div class="student-list" id="studentList"></div>
+
+        </div>
+
+        <div class="right-panel">
+            <h2>班级管理</h2>
+            <div class="class-list" id="classList"></div>
+        </div>
+    </div>
+
+    <script src="js/management.js"></script>
+</body>
+
+</html>

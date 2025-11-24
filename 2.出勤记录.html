@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>出勤记录查看</title>
+    <link rel="stylesheet" href="css/reset.css">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/2.attendance-specific.css">
+</head>
+
+<body>
+    <nav class="float-nav">
+        <ul>
+            <li><a href="1.点名与座位.html">点名与座位</a></li>
+            <li><a href="2.出勤记录.html">出勤记录</a></li>
+            <li><a href="3.班级数据管理.html">班级管理</a></li>
+        </ul>
+    </nav>
+    <div class="container">
+        <div class="left-panel">
+            <h2>班级出勤记录</h2>
+            <select id="classSelect" title="班级选择" class="class-mode">
+                <option value="">请选择</option>
+            </select>
+
+            <div class="student-list-header">
+                <h2>学生名单</h2>
+                <button id="allAttendanceBtn" class="copy-scores-btn" style="display: none;">全部出勤</button>
+            </div>
+            <div class="student-list-container">
+                <table id="student-list-table" class="student-list-table">
+                    <thead>
+                        <tr>
+                            <th>序号</th>
+                            <th>姓名</th>
+                            <th>统计分数</th>
+                            <th>最终成绩</th>
+                            <th>操作</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+        </div>
+        <div class="right-panel">
+            <div class="record-container"></div>
+        </div>
+    </div>
+
+    <div id="studentModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title">学生考勤汇总</div>
+                <span class="close-btn">&times;</span>
+            </div>
+            <div id="attendanceSummary" class="attendance-summary"></div>
+        </div>
+    </div>
+
+    <div id="allAttendanceModal" class="all-attendance-modal">
+        <div class="all-attendance-modal-content">
+            <div class="all-attendance-modal-header">
+                <div class="all-attendance-modal-title">全部出勤</div>
+                <div>
+                    <button id="copyAllAttendanceTableBtn" class="copy-scores-btn"
+                        style="margin-right: 10px;">复制表格</button>
+                    <span class="all-attendance-close-btn">&times;</span>
+                </div>
+            </div>
+            <div id="allAttendanceTableContainer"></div>
+        </div>
+    </div>
+
+    <script src="js/attendance.js"></script>
+</body>
+
+</html>
