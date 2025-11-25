@@ -72,7 +72,25 @@
             <div id="allAttendanceTableContainer"></div>
         </div>
     </div>
-
+    <div id="editRecordModal" class="modal">
+        <div class="modal-content" id="editModalContent">
+            <div class="modal-header">
+                <div id="editModalTitle" class="modal-title">编辑考勤记录</div>
+                <span id="editCloseBtn" class="close-btn">&times;</span>
+            </div>
+            
+            <div class="edit-date-group">
+                <label for="editDateInput">记录日期：</label>
+                <input type="date" id="editDateInput" class="date-today">
+            </div>
+    
+            <div id="editFormContainer" class="attendance-edit-grid">
+                </div>
+            <div style="text-align: right; margin-top: 20px;">
+                <button id="saveEditedRecordBtn" class="copy-scores-btn" style="background-color: var(--primary-color);">保存修改</button>
+            </div>
+        </div>
+    </div>
     <script src="js/attendance.js"></script>
 </body>
 

@@ -9,17 +9,23 @@
 
 /* 容器布局 (Common) */
 .container {
-    display: flex;
-    justify-content: center;
+    position: relative;
     min-height: 100vh;
+    display: block;
+    box-sizing: border-box;
 }
 
 /* 左侧面板 (Common) */
 .left-panel {
-    box-sizing: border-box;
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100vh;
     width: 320px;
     padding: 20px;
     background-color: var(--light-background);
+    box-sizing: border-box;
+    z-index: 10;
 }
 
 .left-panel h2 {
@@ -29,12 +35,14 @@
 /* 右侧面板 (Common) */
 .right-panel {
     box-sizing: border-box;
-    width: 1000px;
-    overflow: hidden;
+    margin-left: 320px; 
+    width: calc(100% - 320px);
+    min-height: 100vh;
     padding: 20px;
     display: flex;
     flex-direction: column;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+    overflow-y: auto; 
 }
 
 .right-panel h2 {

@@ -8,6 +8,31 @@ document.addEventListener('DOMContentLoaded', () => {
     const allAttendanceCloseBtn = document.querySelector(".all-attendance-close-btn");
     const copyAllAttendanceTableBtn = document.getElementById("copyAllAttendanceTableBtn");
 
+    const editRecordModal = document.getElementById("editRecordModal");
+    const editCloseBtn = document.getElementById("editCloseBtn");
+    const saveEditedRecordBtn = document.getElementById("saveEditedRecordBtn");
+    const editFormContainer = document.getElementById("editFormContainer");
+    const editDateInput = document.getElementById("editDateInput");
+    let currentEditingRecord = null; // 用于存储当前正在编辑的记录对象
+    let currentEditingClass = null; // 用于存储当前正在编辑的班级
+
+     // 新增：关闭编辑弹窗
+     editCloseBtn.addEventListener('click', () => {
+        editRecordModal.style.display = "none";
+    });
+
+    // 新增：点击弹窗外部关闭编辑弹窗
+    window.addEventListener('click', (e) => {
+        if (e.target === editRecordModal) {
+            editRecordModal.style.display = "none";
+        }
+    });
+
+    // 新增：保存编辑记录的按钮事件
+    saveEditedRecordBtn.addEventListener('click', () => {
+        saveEditedRecord();
+    });
+
     // 关闭弹窗
     closeBtn.addEventListener('click', () => {
         modal.style.display = "none";
@@ -43,6 +68,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     initClassSelect(classes, classSelect);
+
 
     classSelect.addEventListener('change', (e) => {
         const selectedClass = e.target.value;
@@ -82,6 +108,19 @@ function displayRecords(records) {
         date.className = 'record-date';
         date.textContent = `日期：${record.date}`;
 
+        // 新增：按钮容器
+        const buttonContainer = document.createElement('span');
+
+        // 新增：编辑按钮
+        const editBtn = document.createElement('button');
+        editBtn.className = 'edit-btn';
+        editBtn.textContent = '编辑';
+        editBtn.addEventListener('click', () => {
+            const selectedClass = document.getElementById("classSelect").value;
+            openEditModal(selectedClass, record); // 调用新的编辑函数
+        });
+        buttonContainer.appendChild(editBtn);
+
         const deleteBtn = document.createElement('button');
         deleteBtn.className = 'delete-btn';
         deleteBtn.textContent = '删除';
@@ -92,10 +131,13 @@ function displayRecords(records) {
                 localStorage.setItem(selectedClass, JSON.stringify(updatedRecords));
                 displayRecords(updatedRecords);
                 // 重新显示学生列表以更新分数
-                displayStudentList(selectedClass); 
+                displayStudentList(selectedClass);
             }
         });
-        date.appendChild(deleteBtn);
+        buttonContainer.appendChild(deleteBtn);
+
+        // 将按钮容器添加到日期行
+        date.appendChild(buttonContainer);
 
         const details = document.createElement('div');
         details.className = 'record-details';
@@ -144,7 +186,7 @@ function displayStudentList(selectedClass) {
     classData.name.forEach(student => {
         let totalScore = 100;
         let baseScore = 100; // 记录基础分数
-        
+
         records.forEach(record => {
             Object.entries(record.attendance).forEach(([category, students]) => {
                 const categoryData = attendanceCategories.find(cat => cat.category === category);
@@ -323,21 +365,21 @@ function showStudentAttendanceSummary(studentName, selectedClass) {
 function copyAllAttendanceRecordsToClipboard() {
     const tableContainer = document.getElementById('allAttendanceTableContainer');
     const table = tableContainer.querySelector('table');
-    
+
     if (!table) {
         alert('没有表格数据可复制！');
         return;
     }
-    
+
     // 获取表格的所有行
     const rows = table.querySelectorAll('tr');
     let csvContent = '';
-    
+
     // 遍历所有行和单元格，构建CSV格式
     rows.forEach((row) => {
         const cells = row.querySelectorAll('th, td');
         const rowData = [];
-        
+
         cells.forEach(cell => {
             // 获取单元格文本内容并处理特殊字符
             let cellText = cell.textContent.trim();
@@ -347,10 +389,10 @@ function copyAllAttendanceRecordsToClipboard() {
             }
             rowData.push(cellText);
         });
-        
+
         csvContent += rowData.join('\t') + '\n'; // 使用制表符分隔，便于Excel粘贴
     });
-    
+
     // 复制到剪贴板
     navigator.clipboard.writeText(csvContent).then(() => {
         // 显示一个临时提示
@@ -366,9 +408,9 @@ function copyAllAttendanceRecordsToClipboard() {
         notification.style.zIndex = '1000';
         notification.style.transition = 'opacity 0.5s';
         notification.style.boxShadow = '0 2px 8px rgba(0,0,0,0.2)';
-        
+
         document.body.appendChild(notification);
-        
+
         // 3秒后淡出提示
         setTimeout(() => {
             notification.style.opacity = '0';
@@ -516,4 +558,134 @@ function showAllAttendanceRecords() {
     // 显示表格
     document.getElementById('allAttendanceTableContainer').innerHTML = tableHTML;
     document.getElementById('allAttendanceModal').style.display = 'block';
+}
+
+/**
+ * 打开编辑弹窗并填充表单 (新增日期处理和网格渲染)
+ * @param {string} selectedClass - 班级名称
+ * @param {Object} record - 考勤记录对象
+ */
+function openEditModal(selectedClass, record) {
+    currentEditingRecord = record;
+    currentEditingClass = selectedClass;
+    
+    document.getElementById('editModalTitle').textContent = `编辑 ${record.date} 的考勤记录`;
+    editFormContainer.innerHTML = '';
+    
+    // 1. 设置日期输入框的值
+    editDateInput.value = record.date; 
+
+    const attendanceCategories = JSON.parse(localStorage.getItem('attendanceCategories')) || [];
+    
+    // 2. 为每个考勤类别创建编辑区，使用新的样式类
+    attendanceCategories.forEach(cat => {
+        const categoryName = cat.category;
+        const students = record.attendance[categoryName] || [];
+        
+        const div = document.createElement('div');
+        div.className = 'edit-area-item'; // 使用新的样式类
+        div.innerHTML = `
+            <label style="font-weight: bold; display: block; margin-bottom: 5px;">${categoryName} (${cat.score}分/次) :</label>
+            <textarea 
+                id="edit-${categoryName}" 
+                style="width: 100%; height: 100px; padding: 5px; box-sizing: border-box;" 
+                placeholder="请输入学生姓名，以逗号、空格或换行分隔"
+            >${students.join(', ')}</textarea>
+        `;
+        editFormContainer.appendChild(div);
+    });
+    
+    editRecordModal.style.display = "block";
+}
+
+/**
+ * 保存编辑后的考勤记录 (新增日期修改逻辑)
+ */
+function saveEditedRecord() {
+    if (!currentEditingRecord || !currentEditingClass) {
+        alert('编辑数据丢失，请刷新重试。');
+        return;
+    }
+
+    const selectedClass = currentEditingClass;
+    let records = JSON.parse(localStorage.getItem(selectedClass)) || [];
+    const attendanceCategories = JSON.parse(localStorage.getItem('attendanceCategories')) || [];
+
+    const originalDate = currentEditingRecord.date;
+    const newDate = editDateInput.value.trim(); // 获取新的日期
+
+    if (!newDate) {
+        alert('日期不能为空！');
+        return;
+    }
+
+    // 1. 检查新日期是否冲突
+    let newRecordExists = false;
+    if (newDate !== originalDate) {
+        newRecordExists = records.some(r => r.date === newDate);
+    }
+    
+    // 2. 收集新的考勤数据
+    const newAttendance = {};
+    attendanceCategories.forEach(cat => {
+        const categoryName = cat.category;
+        const textarea = document.getElementById(`edit-${categoryName}`);
+        
+        if (textarea) {
+            // 解析输入，支持逗号、空格或换行分隔
+            const names = textarea.value.split(/[, \n]/)
+                .map(name => name.trim())
+                .filter(name => name.length > 0);
+            
+            newAttendance[categoryName] = names;
+        }
+    });
+
+    const newRecord = {
+        date: newDate,
+        attendance: newAttendance
+    };
+    
+    // 3. 处理记录的更新/迁移/覆盖逻辑
+    if (newDate === originalDate) {
+        // 日期未变，找到原始记录的索引并直接更新
+        const recordIndex = records.findIndex(r => r.date === originalDate);
+        if (recordIndex !== -1) {
+            records[recordIndex] = newRecord;
+        }
+    } else {
+        // 日期改变
+        if (newRecordExists) {
+            // 新日期已存在，询问是否覆盖
+            if (!confirm(`日期 ${newDate} 的记录已存在，确定要用当前编辑的内容覆盖它吗？\n（原始记录 ${originalDate} 将被删除）`)) {
+                return;
+            }
+            // 覆盖：先删除旧日期记录，再删除新日期记录，最后添加新记录
+            records = records.filter(r => r.date !== originalDate); // 删除原始记录
+            records = records.filter(r => r.date !== newDate);      // 删除冲突记录
+            records.push(newRecord);
+        } else {
+            // 新日期不存在，移除旧记录，插入新记录
+            records = records.filter(r => r.date !== originalDate);
+            records.push(newRecord);
+        }
+    }
+    
+    // 重新排序记录
+    records.sort((a, b) => a.date.localeCompare(b.date));
+
+    // 保存到本地存储
+    localStorage.setItem(selectedClass, JSON.stringify(records));
+
+    // 关闭弹窗
+    editRecordModal.style.display = "none";
+    
+    // 刷新 UI
+    displayRecords(records);
+    displayStudentList(selectedClass); // 必须刷新学生列表以更新分数
+    
+    // 更新 currentEditingRecord 以防用户立即再次编辑
+    currentEditingRecord = newRecord; 
+
+    alert(`班级 ${selectedClass} 日期 ${newDate} 的记录已成功更新！`);
 }
