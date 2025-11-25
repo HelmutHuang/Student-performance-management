@@ -27,13 +27,13 @@ function importStudents() {
     const fragment = document.createDocumentFragment();
 
     // 添加所有学生
-    names.forEach(name => {
+    names.forEach((name,index) => {
         const newStudent = document.createElement('div');
         newStudent.className = 'student-item';
-        newStudent.innerHTML = `
-            <input type="text" class="studentName" value="${name}">
-            <button class="btn btn-danger" onclick="removeStudent(this)">删除</button>
-        `;
+        // 移除按钮，保留输入框
+        newStudent.innerHTML = `<input type="text" class="studentName" value="${name}">`;
+        // 提示用户双击删除
+        newStudent.title = `${index + 1}`;
         fragment.appendChild(newStudent);
     });
 
@@ -136,3 +136,17 @@ function showClassData() {
     displayClasses();
 }
 showClassData();
+
+// 双击删除学生项的事件委托
+const studentList = document.getElementById('studentList');
+studentList.addEventListener('dblclick', (event) => {
+    // 确保双击的是 student-item 容器或其内部的 input
+    let targetElement = event.target;
+    if (targetElement.classList.contains('studentName')) {
+        targetElement = targetElement.parentElement;
+    }
+
+    if (targetElement.classList.contains('student-item')) {
+        targetElement.remove();
+    }
+});

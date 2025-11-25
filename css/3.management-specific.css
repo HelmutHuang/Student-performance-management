@@ -69,25 +69,25 @@ input:focus, textarea:focus {
     margin-top: 15px;
     display: flex; 
     flex-wrap: wrap;
-    gap: 8px;
-    max-height: 250px;
+    gap: 6px;
+    max-height: 300px;
     overflow-y: auto;
 }
 .student-item {
-    width: 100px;
     display: flex;
     align-items: center;
-    background-color: #f5f5f5;
-    padding: 4px 8px;
+    background-color: var(--primary-color);
+    padding: 4px 5px;
     border-radius: 6px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 .student-item input {
-    flex: 1;
-    margin-right: 5px;
     border: none;
     background: transparent;
     padding: 0;
+    color: var(--white-color);
+    text-align: center;
+    width: 50px;
 }
 
 /* 修正 3: 删除按钮样式统一 */
