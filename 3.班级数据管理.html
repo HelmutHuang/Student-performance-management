@@ -14,15 +14,16 @@
 <body>
     <div class="container">
         <div class="left-panel">
-            <h2>新增班级</h2>
+            <h2 class="panel-title">新增班级</h2>
             <div class="form-group">
-                <label for="className">班级名称：</label>
-                <input type="text" id="className" placeholder="例如：C240307">
+                <label for="className" class="form-label">班级名称：</label>
+                <input type="text" id="className" class="form-control" placeholder="例如：C240307">
             </div>
 
             <div class="form-group">
-                <label>学生名单：</label>
-                <textarea id="bulkStudents" placeholder="可以从Excel复制多行学生名单，每行一个学生" style="height: 100px;"></textarea>
+                <label class="form-label">学生名单：</label>
+                <textarea id="bulkStudents" class="form-control" placeholder="可以从Excel复制多行学生名单，每行一个学生"
+                    style="height: 100px;"></textarea>
                 <button class="btn btn-secondary" onclick="importStudents()">批量导入</button>
                 <button class="btn" onclick="addClass()">添加班级</button>
             </div>
@@ -32,7 +33,7 @@
         </div>
 
         <div class="right-panel">
-            <h2>班级管理</h2>
+            <h2 class="panel-title">班级管理</h2>
             <div class="class-list" id="classList"></div>
         </div>
     </div>

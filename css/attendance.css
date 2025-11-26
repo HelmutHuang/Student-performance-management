@@ -26,7 +26,7 @@
     align-items: center;
 }
 
-.delete-btn {
+.btn-delete {
     background: var(--accent-color);
     /* 使用变量 */
     color: white;
@@ -37,7 +37,7 @@
     font-size: 12px;
 }
 
-.delete-btn:hover {
+.btn-delete:hover {
     background: darkred;
 }
 
@@ -84,7 +84,7 @@
 }
 
 /* 加分按钮样式 */
-.bonus-btn {
+.btn-bonus {
     background: cadetblue;
     color: white;
     border: none;
@@ -95,12 +95,12 @@
     margin-left: 5px;
 }
 
-.bonus-btn:hover {
+.btn-bonus:hover {
     opacity: 0.8;
 }
 
 /* 复制成绩按钮样式 */
-.copy-scores-btn {
+.btn-copy-scores {
     background: var(--primary-color);
     /* 使用变量 */
     color: white;
@@ -113,7 +113,7 @@
     vertical-align: middle;
 }
 
-.copy-scores-btn:hover {
+.btn-copy-scores:hover {
     opacity: 0.8;
 }
 
@@ -171,7 +171,7 @@
 
 .all-attendance-table {
     width: 100%;
-    border-collapse: collapse;
+    /* border-collapse: collapse; Removed as it is in reset.css */
 }
 
 .all-attendance-table th,
@@ -229,7 +229,7 @@
     background-color: #f9f9f9;
 }
 
-.edit-area-item textarea {
+.edit-textarea {
     width: 100%;
     height: 100px;
     /* 固定文本区域高度 */
@@ -252,7 +252,7 @@
     align-items: center;
 }
 
-.edit-date-group label {
+.edit-label {
     font-weight: bold;
     margin-right: 10px;
 }
@@ -262,7 +262,7 @@
 }
 
 /* 新增编辑按钮样式 */
-.edit-btn {
+.btn-edit {
     background: #0066cc;
     /* 蓝色 */
     color: white;
@@ -275,12 +275,12 @@
     /* 与删除按钮分隔 */
 }
 
-.edit-btn:hover {
+.btn-edit:hover {
     background: #004080;
 }
 
 /* 调整日期行，以容纳两个按钮 */
-.record-date>span {
+.record-btn-group {
     display: flex;
     gap: 5px;
     /* 按钮之间的间隔 */

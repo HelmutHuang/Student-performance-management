@@ -165,7 +165,7 @@ const app = (() => {
          * 获取特定考勤类别中的学生列表
          */
         function getAttendanceStudents(category) {
-            const categoryTitles = document.querySelectorAll('.attendance-title h3');
+            const categoryTitles = document.querySelectorAll('.attendance-title .category-title');
             const categoryIndex = Array.from(categoryTitles).findIndex(
                 h3 => h3.textContent.includes(category)
             );
@@ -490,6 +490,7 @@ const app = (() => {
 
             Config.ATTENDANCE_CATEGORIES.forEach(item => {
                 const h3 = document.createElement('h3');
+                h3.className = 'category-title';
                 h3.textContent = item.category;
                 attendanceTitle.appendChild(h3);
 
@@ -661,7 +662,7 @@ const app = (() => {
 
             // 恢复各类别的考勤学生
             Object.entries(attendanceData.attendance).forEach(([categoryName, students]) => {
-                const categoryTitles = document.querySelectorAll('.attendance-title h3');
+                const categoryTitles = document.querySelectorAll('.attendance-title .category-title');
                 const categoryIndex = Array.from(categoryTitles).findIndex(
                     h3 => h3.textContent.includes(categoryName)
                 );

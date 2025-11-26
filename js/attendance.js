@@ -16,8 +16,8 @@ document.addEventListener('DOMContentLoaded', () => {
     let currentEditingRecord = null; // 用于存储当前正在编辑的记录对象
     let currentEditingClass = null; // 用于存储当前正在编辑的班级
 
-     // 新增：关闭编辑弹窗
-     editCloseBtn.addEventListener('click', () => {
+    // 新增：关闭编辑弹窗
+    editCloseBtn.addEventListener('click', () => {
         editRecordModal.style.display = "none";
     });
 
@@ -113,7 +113,7 @@ function displayRecords(records) {
 
         // 新增：编辑按钮
         const editBtn = document.createElement('button');
-        editBtn.className = 'edit-btn';
+        editBtn.className = 'btn-edit';
         editBtn.textContent = '编辑';
         editBtn.addEventListener('click', () => {
             const selectedClass = document.getElementById("classSelect").value;
@@ -122,7 +122,7 @@ function displayRecords(records) {
         buttonContainer.appendChild(editBtn);
 
         const deleteBtn = document.createElement('button');
-        deleteBtn.className = 'delete-btn';
+        deleteBtn.className = 'btn-delete';
         deleteBtn.textContent = '删除';
         deleteBtn.addEventListener('click', () => {
             if (confirm('确定要删除这条记录吗？')) {
@@ -260,7 +260,7 @@ function displayStudentList(selectedClass) {
 
         // 添加加分按钮
         const bonusBtn = document.createElement('button');
-        bonusBtn.className = 'bonus-btn';
+        bonusBtn.className = 'btn-bonus';
         bonusBtn.textContent = '修改';
         bonusBtn.addEventListener('click', () => {
             const currentBonus = bonusScores[student] || 0;
@@ -568,33 +568,33 @@ function showAllAttendanceRecords() {
 function openEditModal(selectedClass, record) {
     currentEditingRecord = record;
     currentEditingClass = selectedClass;
-    
+
     document.getElementById('editModalTitle').textContent = `编辑 ${record.date} 的考勤记录`;
     editFormContainer.innerHTML = '';
-    
+
     // 1. 设置日期输入框的值
-    editDateInput.value = record.date; 
+    editDateInput.value = record.date;
 
     const attendanceCategories = JSON.parse(localStorage.getItem('attendanceCategories')) || [];
-    
+
     // 2. 为每个考勤类别创建编辑区，使用新的样式类
     attendanceCategories.forEach(cat => {
         const categoryName = cat.category;
         const students = record.attendance[categoryName] || [];
-        
+
         const div = document.createElement('div');
         div.className = 'edit-area-item'; // 使用新的样式类
         div.innerHTML = `
-            <label style="font-weight: bold; display: block; margin-bottom: 5px;">${categoryName} (${cat.score}分/次) :</label>
+            <label class="edit-label" style="display: block; margin-bottom: 5px;">${categoryName} (${cat.score}分/次) :</label>
             <textarea 
                 id="edit-${categoryName}" 
-                style="width: 100%; height: 100px; padding: 5px; box-sizing: border-box;" 
+                class="edit-textarea"
                 placeholder="请输入学生姓名，以逗号、空格或换行分隔"
             >${students.join(', ')}</textarea>
         `;
         editFormContainer.appendChild(div);
     });
-    
+
     editRecordModal.style.display = "block";
 }
 
@@ -624,19 +624,19 @@ function saveEditedRecord() {
     if (newDate !== originalDate) {
         newRecordExists = records.some(r => r.date === newDate);
     }
-    
+
     // 2. 收集新的考勤数据
     const newAttendance = {};
     attendanceCategories.forEach(cat => {
         const categoryName = cat.category;
         const textarea = document.getElementById(`edit-${categoryName}`);
-        
+
         if (textarea) {
             // 解析输入，支持逗号、空格或换行分隔
             const names = textarea.value.split(/[, \n]/)
                 .map(name => name.trim())
                 .filter(name => name.length > 0);
-            
+
             newAttendance[categoryName] = names;
         }
     });
@@ -645,7 +645,7 @@ function saveEditedRecord() {
         date: newDate,
         attendance: newAttendance
     };
-    
+
     // 3. 处理记录的更新/迁移/覆盖逻辑
     if (newDate === originalDate) {
         // 日期未变，找到原始记录的索引并直接更新
@@ -670,7 +670,7 @@ function saveEditedRecord() {
             records.push(newRecord);
         }
     }
-    
+
     // 重新排序记录
     records.sort((a, b) => a.date.localeCompare(b.date));
 
@@ -679,13 +679,13 @@ function saveEditedRecord() {
 
     // 关闭弹窗
     editRecordModal.style.display = "none";
-    
+
     // 刷新 UI
     displayRecords(records);
     displayStudentList(selectedClass); // 必须刷新学生列表以更新分数
-    
+
     // 更新 currentEditingRecord 以防用户立即再次编辑
-    currentEditingRecord = newRecord; 
+    currentEditingRecord = newRecord;
 
     alert(`班级 ${selectedClass} 日期 ${newDate} 的记录已成功更新！`);
 }

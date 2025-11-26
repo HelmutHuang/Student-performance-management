@@ -33,14 +33,14 @@
 }
 
 /* 点名/保存按钮 */
-.rollCall-btn {
+.btn-roll-call {
     width: 100%;
     padding: 10px;
     background-color: var(--accent-color);
     color: var(--white-color);
 }
 
-.save-btn {
+.btn-save {
     width: 100%;
     margin-top: 10px;
     padding: 10px;
@@ -48,14 +48,14 @@
     color: var(--white-color);
 }
 
-.rollCall-btn:hover,
-.save-btn:hover {
+.btn-roll-call:hover,
+.btn-save:hover {
     opacity: 0.8;
     cursor: pointer;
 }
 
 /* 点名结果 */
-.rollCall-result {
+.roll-call-result {
     margin-top: 10px;
     text-align: center;
     font-size: 36px;
@@ -70,7 +70,7 @@
     margin-left: 15px;
 }
 
-.layout-controls label {
+.layout-label {
     color: var(--white-color);
     font-size: 14px;
     white-space: nowrap;
@@ -175,13 +175,13 @@
     gap: 10px;
 }
 
-.attendance-title h3 {
+.category-title {
     text-align: center;
     color: #eee;
     margin: 5px 0;
 }
 
-.attendance-title h3:hover {
+.category-title:hover {
     background-color: rgba(255, 255, 255, 0.2);
     border-radius: 5px;
 }

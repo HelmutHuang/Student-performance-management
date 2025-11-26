@@ -22,16 +22,16 @@ function importStudents() {
     // 清空现有输入
     const studentList = document.getElementById('studentList');
     studentList.innerHTML = '';
-    
+
     // 使用 DocumentFragment 优化性能
     const fragment = document.createDocumentFragment();
 
     // 添加所有学生
-    names.forEach((name,index) => {
+    names.forEach((name, index) => {
         const newStudent = document.createElement('div');
         newStudent.className = 'student-item';
         // 移除按钮，保留输入框
-        newStudent.innerHTML = `<input type="text" class="studentName" value="${name}">`;
+        newStudent.innerHTML = `<input type="text" class="student-name" value="${name}">`;
         // 提示用户双击删除
         newStudent.title = `${index + 1}`;
         fragment.appendChild(newStudent);
@@ -52,7 +52,7 @@ function removeStudent(button) {
 // 添加班级
 function addClass() {
     const className = document.getElementById('className').value;
-    const studentNames = Array.from(document.querySelectorAll('.studentName'))
+    const studentNames = Array.from(document.querySelectorAll('.student-name'))
         .map(input => input.value.trim())
         .filter(name => name);
 
@@ -80,10 +80,10 @@ function addClass() {
             name: studentNames
         });
     }
-    
+
     // 按班级名称排序
     classes.sort((a, b) => a.class.localeCompare(b.class));
-    
+
     // 保存到localStorage
     localStorage.setItem('classes', JSON.stringify(classes));
 
@@ -91,7 +91,7 @@ function addClass() {
     document.getElementById('className').value = '';
     const studentList = document.getElementById('studentList');
     studentList.innerHTML = '';
-    
+
     // 更新显示
     displayClasses();
 }
@@ -118,15 +118,15 @@ function removeClass(index) {
     if (index >= 0 && index < classes.length) {
         // 获取班级名称用于清理相关数据
         const className = classes[index].class;
-        
+
         classes.splice(index, 1);
         localStorage.setItem('classes', JSON.stringify(classes));
-        
+
         // 额外清理与班级相关的数据
         localStorage.removeItem(className); // 清理考勤记录
         localStorage.removeItem(`${className}_seatLayout`); // 清理座位布局
         localStorage.removeItem(`${className}_bonus`); // 清理加分数据
-        
+
         displayClasses();
     }
 }
@@ -138,11 +138,11 @@ function showClassData() {
 showClassData();
 
 // 双击删除学生项的事件委托
-const studentList = document.getElementById('studentList');
-studentList.addEventListener('dblclick', (event) => {
+const studentListElement = document.getElementById('studentList');
+studentListElement.addEventListener('dblclick', (event) => {
     // 确保双击的是 student-item 容器或其内部的 input
     let targetElement = event.target;
-    if (targetElement.classList.contains('studentName')) {
+    if (targetElement.classList.contains('student-name')) {
         targetElement = targetElement.parentElement;
     }
 
