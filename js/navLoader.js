@@ -16,12 +16,15 @@ document.addEventListener('DOMContentLoaded', function () {
     document.body.insertAdjacentHTML('afterbegin', navHtml);
 
     // 2. 标记当前活动链接
-    const currentPath = window.location.pathname;
+    // 解码 pathname 以处理中文文件名 (例如: %E7%82%B9%E5%90%8D -> 点名)
+    const currentPath = decodeURIComponent(window.location.pathname);
     const navLinks = document.querySelectorAll('.float-nav a');
 
     navLinks.forEach(link => {
+        const href = link.getAttribute('href');
         // 使用 endsWith 来判断当前页面是否匹配链接的 href 属性
-        if (currentPath.endsWith(link.getAttribute('href'))) {
+        // 同时检查 href 是否存在，防止空引用
+        if (href && currentPath.endsWith(href)) {
             // 默认 float-nav 的样式已经定义了链接颜色，这里仅添加 ARIA 属性增强可访问性
             link.setAttribute('aria-current', 'page');
 
