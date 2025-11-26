@@ -1,5 +1,5 @@
 /* ==================================== */
-/* 3.班级数据管理.html 专属样式 - 统一结构 */
+/* 页面专属样式 */
 /* ==================================== */
 
 .left-panel {
@@ -88,7 +88,6 @@
 
 .student-item .btn-danger {
     background-color: var(--accent-color);
-    /* crimson */
     color: var(--white-color);
     font-size: 12px;
     padding: 2px 5px;
@@ -98,7 +97,6 @@
 
 .class-item .btn-danger {
     background-color: var(--accent-color);
-    /* crimson */
     color: var(--white-color);
     font-size: 14px;
     padding: 8px 15px;

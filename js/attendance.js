@@ -16,19 +16,19 @@ document.addEventListener('DOMContentLoaded', () => {
     let currentEditingRecord = null; // 用于存储当前正在编辑的记录对象
     let currentEditingClass = null; // 用于存储当前正在编辑的班级
 
-    // 新增：关闭编辑弹窗
+    // 关闭编辑弹窗
     editCloseBtn.addEventListener('click', () => {
         editRecordModal.style.display = "none";
     });
 
-    // 新增：点击弹窗外部关闭编辑弹窗
+    // 点击弹窗外部关闭编辑弹窗
     window.addEventListener('click', (e) => {
         if (e.target === editRecordModal) {
             editRecordModal.style.display = "none";
         }
     });
 
-    // 新增：保存编辑记录的按钮事件
+    // 保存编辑记录的按钮事件
     saveEditedRecordBtn.addEventListener('click', () => {
         saveEditedRecord();
     });
@@ -108,10 +108,10 @@ function displayRecords(records) {
         date.className = 'record-date';
         date.textContent = `日期：${record.date}`;
 
-        // 新增：按钮容器
+        // 按钮容器
         const buttonContainer = document.createElement('span');
 
-        // 新增：编辑按钮
+        // 编辑按钮
         const editBtn = document.createElement('button');
         editBtn.className = 'btn-edit';
         editBtn.textContent = '编辑';
@@ -207,7 +207,7 @@ function displayStudentList(selectedClass) {
         studentScores.push({ student, totalScore, baseScore, bonusScore });
     });
 
-    // 新的最终分数计算方法：基于满分群体平均分的线性缩放
+    // 最终分数计算方法：基于满分群体平均分的线性缩放
 
     // 1. 找出所有原始分数超过100分的学生
     const highScoreStudents = studentScores.filter(score => score.totalScore > 100);
@@ -561,7 +561,7 @@ function showAllAttendanceRecords() {
 }
 
 /**
- * 打开编辑弹窗并填充表单 (新增日期处理和网格渲染)
+ * 打开编辑弹窗并填充表单
  * @param {string} selectedClass - 班级名称
  * @param {Object} record - 考勤记录对象
  */
@@ -599,7 +599,7 @@ function openEditModal(selectedClass, record) {
 }
 
 /**
- * 保存编辑后的考勤记录 (新增日期修改逻辑)
+ * 保存编辑后的考勤记录
  */
 function saveEditedRecord() {
     if (!currentEditingRecord || !currentEditingClass) {

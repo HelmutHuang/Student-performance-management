@@ -325,7 +325,7 @@ const app = (() => {
         }
 
         function parseCompactTextFormat(compactData) {
-            // ... (解析逻辑保持不变，依赖全局 classes)
+            // 解析逻辑依赖全局 classes
             const parts = compactData.split('|');
             if (parts.length < 3) {
                 throw new Error('明文数据格式错误，数据不完整');
@@ -691,7 +691,7 @@ const app = (() => {
          * 显示导出代码弹窗
          */
         function showExportModal(exportCode) {
-            // (函数逻辑保持不变，创建并显示一个临时的模态框)
+            // 创建并显示一个临时的模态框
             const modal = document.createElement('div');
             modal.style.cssText = `
                 position: fixed; top: 0; left: 0; width: 100%; height: 100%;

@@ -113,7 +113,7 @@ function displayClasses() {
     `).join('');
 }
 
-// 删除班级并更新localStorage (增加数据清理逻辑)
+// 删除班级并更新localStorage
 function removeClass(index) {
     if (index >= 0 && index < classes.length) {
         // 获取班级名称用于清理相关数据
