@@ -61,6 +61,11 @@ const app = (() => {
     const loadSeatBtn = document.getElementById('loadSeatBtn');
     const importSeatBtn = document.getElementById('importSeatBtn');
 
+    // 弹窗引用
+    const rollCallModal = document.getElementById('rollCallModal');
+    const closeRollCallModal = document.getElementById('closeRollCallModal');
+    const rollCallModalResult = document.getElementById('rollCallModalResult');
+
     // ========================
     // 3. 辅助工具函数 (Utility Functions)
     // ========================
@@ -585,7 +590,7 @@ const app = (() => {
             }
             initSeatLayout();
             initDate();
-            rollCallResult.textContent = "";
+            // rollCallResult.textContent = ""; // 已移除
         }
 
         /**
@@ -989,13 +994,15 @@ const app = (() => {
         function handleRollCall() {
             const selectedClass = classMode.value;
             if (!selectedClass) {
-                rollCallResult.textContent = "请先选择班级";
+                rollCallModalResult.textContent = "请先选择班级";
+                rollCallModal.style.display = "block";
                 return;
             }
 
             const classData = classes.find(cls => cls.class === selectedClass);
             if (!classData || classData.name.length === 0) {
-                rollCallResult.textContent = "没有学生可点名";
+                rollCallModalResult.textContent = "没有学生可点名";
+                rollCallModal.style.display = "block";
                 return;
             }
 
@@ -1004,12 +1011,38 @@ const app = (() => {
             const availableStudents = classData.name.filter(name => !leaveStudents.includes(name));
 
             if (availableStudents.length === 0) {
-                rollCallResult.textContent = "所有学生均已请假或缺勤";
+                rollCallModalResult.textContent = "所有学生均已请假或缺勤";
+                rollCallModal.style.display = "block";
                 return;
             }
 
             const randomIndex = Math.floor(Math.random() * availableStudents.length);
-            rollCallResult.textContent = availableStudents[randomIndex];
+            const selectedStudent = availableStudents[randomIndex];
+            rollCallModalResult.textContent = selectedStudent;
+
+            const addBonusBtn = document.getElementById('addBonusBtn');
+            addBonusBtn.style.display = 'inline-block';
+
+            // 移除旧的事件监听器（如果有的话），避免重复绑定
+            const newBtn = addBonusBtn.cloneNode(true);
+            addBonusBtn.parentNode.replaceChild(newBtn, addBonusBtn);
+
+            newBtn.addEventListener('click', () => {
+                const category = '加'; // 对应 Config.ATTENDANCE_CATEGORIES 中的 '加'
+                const categoryTitles = document.querySelectorAll('.attendance-title h3');
+                const categoryIndex = Array.from(categoryTitles).findIndex(
+                    h3 => h3.textContent.includes(category)
+                );
+
+                if (categoryIndex !== -1) {
+                    const targetCategory = attendanceArea.children[categoryIndex];
+                    const div = createStudentDiv(selectedStudent);
+                    targetCategory.appendChild(div);
+                    rollCallModal.style.display = "none"; // 点击后关闭弹窗
+                }
+            });
+
+            rollCallModal.style.display = "block";
         }
 
         function saveAttendance() {
@@ -1181,7 +1214,7 @@ const app = (() => {
             const newColumns = parseInt(colInput.value);
             const aisleConfigInput = aisleInput.value.trim();
 
-            if (newRows < 1 || newRows > 15 || newColumns < 1 || newColumns > 15) {
+            if (newRows < 1 || newRows > 15 || newColumns < 1 || newColumns < 15) {
                 alert('行数和列数必须在1-15之间');
                 return;
             }
@@ -1238,6 +1271,19 @@ const app = (() => {
             categoryTitlesContainer.addEventListener('click', (event) => {
                 if (event.target.tagName === 'H3') {
                     addGreenStudentsToAttendance(event);
+                }
+            });
+
+            // 弹窗关闭事件
+            if (closeRollCallModal) {
+                closeRollCallModal.addEventListener('click', () => {
+                    rollCallModal.style.display = "none";
+                });
+            }
+
+            window.addEventListener('click', (event) => {
+                if (event.target === rollCallModal) {
+                    rollCallModal.style.display = "none";
                 }
             });
         }
