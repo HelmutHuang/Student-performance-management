@@ -57,6 +57,7 @@ const app = (() => {
     const createLayoutBtn = document.getElementById("createLayoutBtn");
     const trashBin = document.getElementById('trashBin');
     const saveBtn = document.getElementById('saveBtn');
+    const loadAttendanceBtn = document.getElementById('loadAttendanceBtn');
     const loadSeatBtn = document.getElementById('loadSeatBtn');
     const importSeatBtn = document.getElementById('importSeatBtn');
 
@@ -1156,6 +1157,25 @@ const app = (() => {
             }
         }
 
+        function loadAttendance() {
+            const selectedClass = classMode.value;
+            if (!selectedClass) {
+                alert('请先选择班级');
+                return;
+            }
+
+            const currentDate = dateToday.value;
+            const classRecords = JSON.parse(localStorage.getItem(selectedClass)) || [];
+            const record = classRecords.find(r => r.date === currentDate);
+
+            if (record) {
+                UIRenderer.restoreAttendanceToUI(record);
+                alert(`成功载入 ${currentDate} 的出勤记录`);
+            } else {
+                alert(`未找到 ${currentDate} 的出勤记录`);
+            }
+        }
+
         function createCustomLayout() {
             const newRows = parseInt(rowInput.value);
             const newColumns = parseInt(colInput.value);
@@ -1195,6 +1215,7 @@ const app = (() => {
             classMode.addEventListener("change", UIRenderer.initClass);
             rollCallBtn.addEventListener("click", handleRollCall);
             saveBtn.addEventListener('click', saveAttendance);
+            loadAttendanceBtn.addEventListener('click', loadAttendance);
             loadSeatBtn.addEventListener('click', loadSeatLayout);
             importSeatBtn.addEventListener('click', importDataFromClipboard);
             createLayoutBtn.addEventListener('click', createCustomLayout);
