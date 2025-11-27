@@ -20,7 +20,7 @@
 
             <div class="student-list-header">
                 <h2 class="panel-title">学生名单</h2>
-                <button id="allAttendanceBtn" class="btn-copy-scores" style="display: none;">全部出勤</button>
+                <button id="allAttendanceBtn" class="btn-sm btn-sm-green" style="display: none;">全部出勤</button>
             </div>
             <div class="student-list-container">
                 <table id="student-list-table" class="student-list-table">
@@ -52,14 +52,13 @@
         </div>
     </div>
 
-    <div id="allAttendanceModal" class="all-attendance-modal">
-        <div class="all-attendance-modal-content">
-            <div class="all-attendance-modal-header">
-                <div class="all-attendance-modal-title">全部出勤</div>
+    <div id="allAttendanceModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title">全部出勤</div>
                 <div>
-                    <button id="copyAllAttendanceTableBtn" class="btn-copy-scores"
-                        style="margin-right: 10px;">复制表格</button>
-                    <span class="all-attendance-close-btn">&times;</span>
+                    <button id="copyAllAttendanceTableBtn" class="btn-sm btn-sm-green">复制表格</button>
+                    <span class="all-attendance-close-btn close-btn">&times;</span>
                 </div>
             </div>
             <div id="allAttendanceTableContainer"></div>
@@ -80,8 +79,7 @@
             <div id="editFormContainer" class="attendance-edit-grid">
             </div>
             <div style="text-align: right; margin-top: 20px;">
-                <button id="saveEditedRecordBtn" class="btn-copy-scores"
-                    style="background-color: var(--primary-color);">保存修改</button>
+                <button id="saveEditedRecordBtn" class="btn-sm btn-sm-green">保存修改</button>
             </div>
         </div>
     </div>

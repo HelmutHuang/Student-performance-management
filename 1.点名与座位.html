@@ -19,15 +19,15 @@
             </select>
             <h2 class="panel-title">学生名单</h2>
             <div id="studentList" class="student-list"></div>
-            <button id="rollCallBtn" class="btn-roll-call">点名</button>
-            <button id="saveBtn" class="btn-save">保存出勤记录与座位布局</button>
+            <button id="rollCallBtn" class="btn-bg btn-bg-green">点名</button>
+            <button id="saveBtn" class="btn-bg btn-bg-red">保存出勤记录与座位布局</button>
         </div>
         <div class="right-panel">
             <h2 class="panel-title">座位布局
                 <input type="date" id="dateToday" class="date-today">
-                <button id="loadAttendanceBtn" class="btn-toggle">载入出勤</button>
-                <button id="loadSeatBtn" class="btn-toggle">载入座位</button>
-                <button id="importSeatBtn" class="btn-toggle">导入座位</button>
+                <button id="loadAttendanceBtn" class="btn-sm btn-sm-white">载入出勤</button>
+                <button id="loadSeatBtn" class="btn-sm btn-sm-white">载入座位</button>
+                <button id="importSeatBtn" class="btn-sm btn-sm-white">导入座位</button>
                 <span class="layout-controls">
                     <label class="layout-label">行数: <input type="number" id="rowInput" min="1" max="15" value="11"
                             class="layout-input"></label>
@@ -35,7 +35,7 @@
                             class="layout-input"></label>
                     <label class="layout-label">过道位置: <input type="text" id="aisleInput" placeholder="在第几列前加过道，如: 3,6"
                             class="layout-input-aisle" title="在指定列前面添加过道。例如: 3,6 表示在第3列和第6列前面各加一个过道"></label>
-                    <button id="createLayoutBtn" class="btn-toggle">创建布局</button>
+                    <button id="createLayoutBtn" class="btn-sm btn-sm-white">创建布局</button>
                 </span>
             </h2>
             <div id="seatLayout" class="seat-layout"></div>

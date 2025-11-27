@@ -1,5 +1,6 @@
 // 初始化时从localStorage读取数据
 let classes = JSON.parse(localStorage.getItem('classes') || '[]');
+let currentEditIndex = -1; // 当前正在编辑的班级索引
 
 // 批量导入学生
 function importStudents() {
@@ -52,7 +53,7 @@ function removeStudent(button) {
 // 添加班级
 function addClass() {
     const className = document.getElementById('className').value;
-    const studentNames = Array.from(document.querySelectorAll('.student-name'))
+    const studentNames = Array.from(document.querySelectorAll('#studentList .student-name'))
         .map(input => input.value.trim())
         .filter(name => name);
 
@@ -104,7 +105,10 @@ function displayClasses() {
         <div class="class-item">
             <div style="display: flex; justify-content: space-between; align-items: center;">
                 <h3>${cls.class} (${cls.name.length}人)</h3>
-                <button class="btn btn-danger" onclick="removeClass(${index})">删除班级</button>
+                <div>
+                    <button class="btn-sm btn-sm-green" onclick="editClass(${index})">编辑</button>
+                    <button class="btn-sm btn-sm-red" onclick="removeClass(${index})">删除班级</button>
+                </div>
             </div>
             <ul>
                 ${cls.name.map(name => `<li>${name}</li>`).join('')}
@@ -116,6 +120,10 @@ function displayClasses() {
 // 删除班级并更新localStorage
 function removeClass(index) {
     if (index >= 0 && index < classes.length) {
+        if (!confirm(`确定要删除班级 ${classes[index].class} 吗？此操作不可恢复。`)) {
+            return;
+        }
+
         // 获取班级名称用于清理相关数据
         const className = classes[index].class;
 
@@ -150,3 +158,188 @@ studentListElement.addEventListener('dblclick', (event) => {
         targetElement.remove();
     }
 });
+
+// ==========================================
+// 编辑班级相关功能
+// ==========================================
+
+function editClass(index) {
+    currentEditIndex = index;
+    const cls = classes[index];
+
+    document.getElementById('editClassName').value = cls.class;
+    renderEditStudentList(cls.name);
+
+    document.getElementById('editClassModal').style.display = 'flex';
+}
+
+function closeEditModal() {
+    document.getElementById('editClassModal').style.display = 'none';
+    currentEditIndex = -1;
+}
+
+function renderEditStudentList(studentNames) {
+    const listContainer = document.getElementById('editStudentList');
+    listContainer.innerHTML = '';
+
+    studentNames.forEach((name, idx) => {
+        const item = document.createElement('div');
+        item.className = 'edit-student-item';
+        item.draggable = true;
+        item.innerHTML = `
+            <span class="name">${name}</span>
+            <span class="remove-btn" onclick="removeStudentFromEdit(${idx})">&times;</span>
+        `;
+
+        // 拖拽事件
+        item.addEventListener('dragstart', handleDragStart);
+        item.addEventListener('dragover', handleDragOver);
+        item.addEventListener('drop', handleDrop);
+        item.addEventListener('dragenter', handleDragEnter);
+        item.addEventListener('dragleave', handleDragLeave);
+        item.addEventListener('dragend', handleDragEnd);
+
+        listContainer.appendChild(item);
+    });
+}
+
+function addStudentsToEditList() {
+    const bulkInput = document.getElementById('editBulkStudents').value;
+    if (!bulkInput.trim()) return;
+
+    const newNames = bulkInput.split(/[\n\t]/)
+        .map(name => name.trim())
+        .filter(name => name);
+
+    if (newNames.length > 0) {
+        // 获取当前列表中的学生
+        const currentNames = Array.from(document.querySelectorAll('#editStudentList .name')).map(span => span.textContent);
+        const updatedNames = [...currentNames, ...newNames];
+        renderEditStudentList(updatedNames);
+        document.getElementById('editBulkStudents').value = '';
+    }
+}
+
+function removeStudentFromEdit(index) {
+    const currentNames = Array.from(document.querySelectorAll('#editStudentList .name')).map(span => span.textContent);
+    currentNames.splice(index, 1);
+    renderEditStudentList(currentNames);
+}
+
+function saveClassChanges() {
+    if (currentEditIndex === -1) return;
+
+    const newClassName = document.getElementById('editClassName').value.trim();
+    const newStudentNames = Array.from(document.querySelectorAll('#editStudentList .name')).map(span => span.textContent);
+
+    if (!newClassName || newStudentNames.length === 0) {
+        alert('班级名称和学生名单不能为空');
+        return;
+    }
+
+    const oldClassName = classes[currentEditIndex].class;
+
+    // 如果修改了班级名称，检查是否冲突
+    if (newClassName !== oldClassName) {
+        const conflictIndex = classes.findIndex(c => c.class === newClassName);
+        if (conflictIndex !== -1 && conflictIndex !== currentEditIndex) {
+            alert(`班级名称 ${newClassName} 已存在，请使用其他名称`);
+            return;
+        }
+
+        // 迁移数据
+        const attendanceData = localStorage.getItem(oldClassName);
+        const seatLayoutData = localStorage.getItem(`${oldClassName}_seatLayout`);
+        const bonusData = localStorage.getItem(`${oldClassName}_bonus`);
+
+        if (attendanceData) localStorage.setItem(newClassName, attendanceData);
+        if (seatLayoutData) localStorage.setItem(`${newClassName}_seatLayout`, seatLayoutData);
+        if (bonusData) localStorage.setItem(`${newClassName}_bonus`, bonusData);
+
+        // 删除旧数据
+        localStorage.removeItem(oldClassName);
+        localStorage.removeItem(`${oldClassName}_seatLayout`);
+        localStorage.removeItem(`${oldClassName}_bonus`);
+    }
+
+    // 更新班级数据
+    classes[currentEditIndex] = {
+        class: newClassName,
+        name: newStudentNames
+    };
+
+    // 重新排序并保存
+    classes.sort((a, b) => a.class.localeCompare(b.class));
+    localStorage.setItem('classes', JSON.stringify(classes));
+
+    closeEditModal();
+    displayClasses();
+    alert('班级信息已更新');
+}
+
+// 拖拽排序相关变量和函数
+let dragSrcEl = null;
+
+function handleDragStart(e) {
+    dragSrcEl = this;
+    e.dataTransfer.effectAllowed = 'move';
+    e.dataTransfer.setData('text/html', this.innerHTML);
+    this.classList.add('dragging');
+}
+
+function handleDragOver(e) {
+    if (e.preventDefault) {
+        e.preventDefault();
+    }
+    e.dataTransfer.dropEffect = 'move';
+    return false;
+}
+
+function handleDragEnter(e) {
+    this.classList.add('over');
+}
+
+function handleDragLeave(e) {
+    this.classList.remove('over');
+}
+
+function handleDrop(e) {
+    if (e.stopPropagation) {
+        e.stopPropagation();
+    }
+
+    if (dragSrcEl !== this) {
+        // 交换内容是不够的，我们需要交换DOM元素或者重新渲染列表
+        // 这里简单地交换 innerHTML，但在更复杂的场景下应该交换数据模型并重新渲染
+        // 为了保持事件绑定，最好是交换数据模型
+
+        const listContainer = document.getElementById('editStudentList');
+        const items = Array.from(listContainer.children);
+        const srcIndex = items.indexOf(dragSrcEl);
+        const targetIndex = items.indexOf(this);
+
+        const currentNames = items.map(item => item.querySelector('.name').textContent);
+
+        // 移动数组元素
+        const [movedItem] = currentNames.splice(srcIndex, 1);
+        currentNames.splice(targetIndex, 0, movedItem);
+
+        renderEditStudentList(currentNames);
+    }
+
+    return false;
+}
+
+function handleDragEnd(e) {
+    this.classList.remove('dragging');
+    const items = document.querySelectorAll('.edit-student-item');
+    items.forEach(item => item.classList.remove('over'));
+}
+
+// 点击弹窗外部关闭
+window.onclick = function (event) {
+    const modal = document.getElementById('editClassModal');
+    if (event.target == modal) {
+        closeEditModal();
+    }
+}

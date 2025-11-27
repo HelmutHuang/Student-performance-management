@@ -23,8 +23,8 @@
                 <label class="form-label">学生名单：</label>
                 <textarea id="bulkStudents" class="form-control" placeholder="可以从Excel复制多行学生名单，每行一个学生"
                     style="height: 100px;"></textarea>
-                <button class="btn btn-secondary" onclick="importStudents()">批量导入</button>
-                <button class="btn" onclick="addClass()">添加班级</button>
+                <button class="btn-bg btn-bg-green" onclick="importStudents()">批量导入</button>
+                <button class="btn-bg btn-bg-red" onclick="addClass()">添加班级</button>
             </div>
 
             <div class="student-list" id="studentList"></div>
@@ -34,6 +34,37 @@
         <div class="right-panel">
             <h2 class="panel-title">班级管理</h2>
             <div class="class-list" id="classList"></div>
+        </div>
+    </div>
+
+    <!-- 编辑班级弹窗 -->
+    <div id="editClassModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title">编辑班级</div>
+                <span class="close-btn" onclick="closeEditModal()">&times;</span>
+            </div>
+            <div class="form-group">
+                <label for="editClassName" class="form-label">班级名称：</label>
+                <input type="text" id="editClassName" class="form-control">
+            </div>
+            <div class="form-group">
+                <label class="form-label">添加学生（批量）：</label>
+                <div style="display: flex; gap: 10px;">
+                    <textarea id="editBulkStudents" class="form-control" style="height: 60px; margin-bottom: 0;"
+                        placeholder="粘贴学生名单..."></textarea>
+                    <button style="width: 100px; margin-top: 0;" onclick="addStudentsToEditList()">添加</button>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="form-label">学生名单（拖拽排序）：</label>
+                <div id="editStudentList" class="edit-student-list">
+                    <!-- Student items will be populated here -->
+                </div>
+            </div>
+            <div style="text-align: right; margin-top: 20px;">
+                <button class="btn-sm btn-sm-green" onclick="saveClassChanges()">保存修改</button>
+            </div>
         </div>
     </div>
 

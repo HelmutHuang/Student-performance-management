@@ -11,10 +11,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const editRecordModal = document.getElementById("editRecordModal");
     const editCloseBtn = document.getElementById("editCloseBtn");
     const saveEditedRecordBtn = document.getElementById("saveEditedRecordBtn");
-    const editFormContainer = document.getElementById("editFormContainer");
-    const editDateInput = document.getElementById("editDateInput");
-    let currentEditingRecord = null; // 用于存储当前正在编辑的记录对象
-    let currentEditingClass = null; // 用于存储当前正在编辑的班级
 
     // 关闭编辑弹窗
     editCloseBtn.addEventListener('click', () => {
@@ -113,7 +109,7 @@ function displayRecords(records) {
 
         // 编辑按钮
         const editBtn = document.createElement('button');
-        editBtn.className = 'btn-edit';
+        editBtn.className = 'btn-sm btn-sm-green';
         editBtn.textContent = '编辑';
         editBtn.addEventListener('click', () => {
             const selectedClass = document.getElementById("classSelect").value;
@@ -122,7 +118,7 @@ function displayRecords(records) {
         buttonContainer.appendChild(editBtn);
 
         const deleteBtn = document.createElement('button');
-        deleteBtn.className = 'btn-delete';
+        deleteBtn.className = 'btn-sm btn-sm-red';
         deleteBtn.textContent = '删除';
         deleteBtn.addEventListener('click', () => {
             if (confirm('确定要删除这条记录吗？')) {
@@ -358,7 +354,7 @@ function showStudentAttendanceSummary(studentName, selectedClass) {
     }
 
     // 显示弹窗
-    modal.style.display = "block";
+    modal.style.display = "flex";
 }
 
 // 复制全部出勤表格到剪贴板
@@ -557,7 +553,7 @@ function showAllAttendanceRecords() {
 
     // 显示表格
     document.getElementById('allAttendanceTableContainer').innerHTML = tableHTML;
-    document.getElementById('allAttendanceModal').style.display = 'block';
+    document.getElementById('allAttendanceModal').style.display = 'flex';
 }
 
 /**
@@ -595,7 +591,7 @@ function openEditModal(selectedClass, record) {
         editFormContainer.appendChild(div);
     });
 
-    editRecordModal.style.display = "block";
+    editRecordModal.style.display = "flex";
 }
 
 /**

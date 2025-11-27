@@ -7,7 +7,6 @@
     display: flex;
     flex-wrap: wrap;
     gap: 3px;
-    margin-bottom: 20px;
 }
 
 .student-list .student {
@@ -30,36 +29,6 @@
 .student.green {
     background-color: greenyellow;
     color: black;
-}
-
-/* 点名/保存按钮 */
-.btn-roll-call {
-    width: 100%;
-    padding: 10px;
-    background-color: var(--accent-color);
-    color: var(--white-color);
-}
-
-.btn-save {
-    width: 100%;
-    margin-top: 10px;
-    padding: 10px;
-    background-color: var(--primary-color);
-    color: var(--white-color);
-}
-
-.btn-roll-call:hover,
-.btn-save:hover {
-    opacity: 0.8;
-    cursor: pointer;
-}
-
-/* 点名结果 */
-.roll-call-result {
-    margin-top: 10px;
-    text-align: center;
-    font-size: 36px;
-    color: var(--accent-color);
 }
 
 /* 布局控制 */
@@ -195,6 +164,10 @@
     border-radius: 20px;
     float: right;
     cursor: pointer;
+}
+
+.trash-bin:hover {
+    background-color: darkred;
 }
 
 .attendance-category {

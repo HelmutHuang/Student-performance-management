@@ -24,20 +24,6 @@
     align-items: center;
 }
 
-.btn-delete {
-    background: var(--accent-color);
-    color: white;
-    border: none;
-    padding: 5px 10px;
-    border-radius: 3px;
-    cursor: pointer;
-    font-size: 12px;
-}
-
-.btn-delete:hover {
-    background: darkred;
-}
-
 .record-details {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -95,75 +81,7 @@
     opacity: 0.8;
 }
 
-/* 复制成绩按钮样式 */
-.btn-copy-scores {
-    background: var(--primary-color);
-    color: white;
-    border: none;
-    padding: 5px 12px;
-    border-radius: 4px;
-    cursor: pointer;
-    font-size: 12px;
-    margin-left: 10px;
-    vertical-align: middle;
-}
-
-.btn-copy-scores:hover {
-    opacity: 0.8;
-}
-
 /* 全部出勤弹窗样式 */
-.all-attendance-modal {
-    display: none;
-    position: fixed;
-    z-index: 1000;
-    left: 0;
-    top: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.5);
-}
-
-.all-attendance-modal-content {
-    background-color: #fff;
-    margin: 2% auto;
-    padding: 20px;
-    border-radius: 5px;
-    width: 95%;
-    max-width: 1200px;
-    max-height: 85vh;
-    overflow-y: auto;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-    position: relative;
-    animation: modalFadeIn 0.3s;
-}
-
-.all-attendance-modal-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 15px;
-    padding-bottom: 10px;
-    border-bottom: 1px solid #ddd;
-}
-
-.all-attendance-modal-title {
-    font-size: 1.5rem;
-    font-weight: bold;
-    color: #333;
-}
-
-.all-attendance-close-btn {
-    font-size: 1.8rem;
-    font-weight: bold;
-    cursor: pointer;
-    color: #777;
-}
-
-.all-attendance-close-btn:hover {
-    color: #000;
-}
-
 .all-attendance-table {
     width: 100%;
 }
@@ -193,11 +111,6 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-}
-
-#editRecordModal .modal-content {
-    max-width: 900px;
-    margin: 5% auto;
 }
 
 /* 编辑表单布局 */
