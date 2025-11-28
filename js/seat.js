@@ -996,14 +996,14 @@ const app = (() => {
             const selectedClass = classMode.value;
             if (!selectedClass) {
                 rollCallModalResult.textContent = "请先选择班级";
-                rollCallModal.style.display = "block";
+                rollCallModal.style.display = "flex";
                 return;
             }
 
             const classData = classes.find(cls => cls.class === selectedClass);
             if (!classData || classData.name.length === 0) {
                 rollCallModalResult.textContent = "没有学生可点名";
-                rollCallModal.style.display = "block";
+                rollCallModal.style.display = "flex";
                 return;
             }
 
@@ -1013,7 +1013,7 @@ const app = (() => {
 
             if (availableStudents.length === 0) {
                 rollCallModalResult.textContent = "所有学生均已请假或缺勤";
-                rollCallModal.style.display = "block";
+                rollCallModal.style.display = "flex";
                 return;
             }
 
@@ -1043,7 +1043,7 @@ const app = (() => {
                 }
             });
 
-            rollCallModal.style.display = "block";
+            rollCallModal.style.display = "flex";
         }
 
         function saveAttendance() {
