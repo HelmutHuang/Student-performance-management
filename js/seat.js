@@ -47,7 +47,6 @@ const app = (() => {
     const classMode = document.getElementById("classMode");
     const studentList = document.getElementById("studentList");
     const rollCallBtn = document.getElementById("rollCallBtn");
-    const rollCallResult = document.getElementById("rollCallResult");
     const seatLayout = document.getElementById("seatLayout");
     const attendanceArea = document.getElementById("attendanceArea");
     const dateToday = document.getElementById("dateToday");
