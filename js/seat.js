@@ -1214,7 +1214,7 @@ const app = (() => {
             const newColumns = parseInt(colInput.value);
             const aisleConfigInput = aisleInput.value.trim();
 
-            if (newRows < 1 || newRows > 15 || newColumns < 1 || newColumns < 15) {
+            if (newRows < 1 || newRows > 15 || newColumns < 1 || newColumns > 15) {
                 alert('行数和列数必须在1-15之间');
                 return;
             }
