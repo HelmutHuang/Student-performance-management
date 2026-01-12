@@ -8,6 +8,11 @@ document.addEventListener('DOMContentLoaded', () => {
     const allAttendanceCloseBtn = document.querySelector(".all-attendance-close-btn");
     const copyAllAttendanceTableBtn = document.getElementById("copyAllAttendanceTableBtn");
 
+    const dailyAttendanceBtn = document.getElementById("dailyAttendanceBtn");
+    const dailyAttendanceModal = document.getElementById("dailyAttendanceModal");
+    const dailyAttendanceCloseBtn = document.querySelector(".daily-attendance-close-btn");
+    const copyDailyAttendanceTableBtn = document.getElementById("copyDailyAttendanceTableBtn");
+
     const editRecordModal = document.getElementById("editRecordModal");
     const editCloseBtn = document.getElementById("editCloseBtn");
     const saveEditedRecordBtn = document.getElementById("saveEditedRecordBtn");
@@ -63,6 +68,28 @@ document.addEventListener('DOMContentLoaded', () => {
         copyAllAttendanceRecordsToClipboard();
     });
 
+    // 每日出勤按钮事件
+    dailyAttendanceBtn.addEventListener('click', () => {
+        showDailyAttendanceRecords();
+    });
+
+    // 关闭每日出勤弹窗
+    dailyAttendanceCloseBtn.addEventListener('click', () => {
+        dailyAttendanceModal.style.display = "none";
+    });
+
+    // 点击每日出勤弹窗外部关闭弹窗
+    window.addEventListener('click', (e) => {
+        if (e.target === dailyAttendanceModal) {
+            dailyAttendanceModal.style.display = "none";
+        }
+    });
+
+    // 复制每日出勤表格按钮事件
+    copyDailyAttendanceTableBtn.addEventListener('click', () => {
+        copyDailyAttendanceTableToClipboard();
+    });
+
     initClassSelect(classes, classSelect);
 
 
@@ -72,6 +99,7 @@ document.addEventListener('DOMContentLoaded', () => {
             // 隐藏复制按钮当没有选择班级时
             // 注意: copyScoresBtn 变量未定义，这里使用 allAttendanceBtn 来处理显示状态
             document.getElementById('allAttendanceBtn').style.display = 'none';
+            document.getElementById('dailyAttendanceBtn').style.display = 'none';
             document.querySelector('#student-list-table tbody').innerHTML = '';
             document.querySelector('.record-container').innerHTML = '';
             return;
@@ -290,10 +318,13 @@ function displayStudentList(selectedClass) {
 
     // 显示全部出勤按钮（当有学生数据时）
     const allAttendanceBtn = document.getElementById('allAttendanceBtn');
+    const dailyAttendanceBtn = document.getElementById('dailyAttendanceBtn');
     if (studentScores.length > 0) {
         allAttendanceBtn.style.display = 'inline-block';
+        dailyAttendanceBtn.style.display = 'inline-block';
     } else {
         allAttendanceBtn.style.display = 'none';
+        dailyAttendanceBtn.style.display = 'none';
     }
 }
 
@@ -684,4 +715,138 @@ function saveEditedRecord() {
     currentEditingRecord = newRecord;
 
     alert(`班级 ${selectedClass} 日期 ${newDate} 的记录已成功更新！`);
+}
+
+// 显示每日出勤记录
+function showDailyAttendanceRecords() {
+    const selectedClass = document.getElementById("classSelect").value;
+    if (!selectedClass) {
+        alert('请先选择班级');
+        return;
+    }
+
+    const classData = JSON.parse(localStorage.getItem('classes')).find(cls => cls.class === selectedClass);
+    if (!classData) return;
+
+    const records = JSON.parse(localStorage.getItem(selectedClass)) || [];
+    // 按日期排序
+    records.sort((a, b) => a.date.localeCompare(b.date));
+
+    const students = classData.name;
+
+    // 生成表格HTML
+    let tableHTML = `
+        <table class="daily-attendance-table" style="width: 100%; border-collapse: collapse;">
+            <thead>
+                <tr>
+                    <th style="position: sticky; left: 0; background: #f2f2f2; z-index: 1;">姓名</th>
+    `;
+
+    // 表头：日期
+    records.forEach(record => {
+        tableHTML += `<th>${record.date}</th>`;
+    });
+
+    tableHTML += `
+                </tr>
+            </thead>
+            <tbody>
+    `;
+
+    // 表体：学生出勤情况
+    students.forEach(student => {
+        tableHTML += `<tr>`;
+        tableHTML += `<td style="position: sticky; left: 0; background: #fff; z-index: 1;">${student}</td>`;
+
+        records.forEach(record => {
+            let statusSymbol = '√'; // 默认正常
+            let color = 'green';
+
+            // 检查该学生是否在某个非正常出勤列表中
+            // 优先级：旷课 > 迟到 > 请假 > 正常
+
+            const attendance = record.attendance;
+
+            if (attendance['旷'] && attendance['旷'].includes(student)) {
+                statusSymbol = '×';
+                color = 'red';
+            } else if (attendance['迟'] && attendance['迟'].includes(student)) {
+                statusSymbol = '+';
+                color = 'orange';
+            } else if (attendance['假'] && attendance['假'].includes(student)) {
+                statusSymbol = '○';
+                color = '#1E90FF';
+            }
+
+            tableHTML += `<td style="color: ${color}; text-align: center;">${statusSymbol}</td>`;
+        });
+
+        tableHTML += `</tr>`;
+    });
+
+    tableHTML += `
+            </tbody>
+        </table>
+    `;
+
+    document.getElementById('dailyAttendanceTableContainer').innerHTML = tableHTML;
+    document.getElementById('dailyAttendanceModal').style.display = 'flex';
+}
+
+// 复制每日出勤表格到剪贴板
+function copyDailyAttendanceTableToClipboard() {
+    const tableContainer = document.getElementById('dailyAttendanceTableContainer');
+    const table = tableContainer.querySelector('table');
+
+    if (!table) {
+        alert('没有表格数据可复制！');
+        return;
+    }
+
+    const rows = table.querySelectorAll('tr');
+    let csvContent = '';
+
+    rows.forEach((row) => {
+        const cells = row.querySelectorAll('th, td');
+        const rowData = [];
+
+        cells.forEach(cell => {
+            let cellText = cell.textContent.trim();
+            if (cellText.includes(',') || cellText.includes('\n') || cellText.includes('"')) {
+                cellText = `"${cellText.replace(/"/g, '""')}"`;
+            }
+            rowData.push(cellText);
+        });
+
+        csvContent += rowData.join('\t') + '\n';
+    });
+
+    navigator.clipboard.writeText(csvContent).then(() => {
+        const notification = document.createElement('div');
+        notification.textContent = '已复制表格到剪贴板！';
+        notification.style.position = 'fixed';
+        notification.style.bottom = '20px';
+        notification.style.right = '20px';
+        notification.style.backgroundColor = 'teal';
+        notification.style.color = 'white';
+        notification.style.padding = '10px 20px';
+        notification.style.borderRadius = '5px';
+        notification.style.zIndex = '1000';
+        notification.style.transition = 'opacity 0.5s';
+        notification.style.boxShadow = '0 2px 8px rgba(0,0,0,0.2)';
+
+        document.body.appendChild(notification);
+
+        setTimeout(() => {
+            notification.style.opacity = '0';
+            setTimeout(() => {
+                if (document.body.contains(notification)) {
+                    document.body.removeChild(notification);
+                }
+            }, 500);
+        }, 3000);
+    }).catch(err => {
+        console.error('复制失败:', err);
+        alert('复制失败，请重试！');
+    });
 }

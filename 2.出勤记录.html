@@ -20,7 +20,10 @@
 
             <div class="student-list-header">
                 <h2 class="panel-title">学生名单</h2>
-                <button id="allAttendanceBtn" class="btn-sm btn-sm-green" style="display: none;">全部出勤</button>
+                <div style="display: flex; gap: 10px;">
+                    <button id="dailyAttendanceBtn" class="btn-sm btn-sm-green" style="display: none;">每日出勤</button>
+                    <button id="allAttendanceBtn" class="btn-sm btn-sm-green" style="display: none;">全部出勤</button>
+                </div>
             </div>
             <div class="student-list-container">
                 <table id="student-list-table" class="student-list-table">
@@ -81,6 +84,18 @@
             <div style="text-align: right; margin-top: 20px;">
                 <button id="saveEditedRecordBtn" class="btn-sm btn-sm-green">保存修改</button>
             </div>
+        </div>
+    </div>
+    <div id="dailyAttendanceModal" class="modal">
+        <div class="modal-content" style="width: 90%; max-width: 1200px;">
+            <div class="modal-header">
+                <div class="modal-title">每日出勤详情</div>
+                <div>
+                    <button id="copyDailyAttendanceTableBtn" class="btn-sm btn-sm-green">复制表格</button>
+                    <span class="daily-attendance-close-btn close-btn">&times;</span>
+                </div>
+            </div>
+            <div id="dailyAttendanceTableContainer" style="overflow-x: auto;"></div>
         </div>
     </div>
     <script src="js/attendance.js"></script>
