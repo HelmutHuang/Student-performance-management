@@ -739,12 +739,25 @@ function showDailyAttendanceRecords() {
         <table class="daily-attendance-table" style="width: 100%; border-collapse: collapse;">
             <thead>
                 <tr>
-                    <th style="position: sticky; left: 0; background: #f2f2f2; z-index: 1;">姓名</th>
+                    <th rowspan="2" style="position: sticky; left: 0; background: #f2f2f2; z-index: 10; vertical-align: middle;">序号</th>
+                    <th rowspan="2" style="position: sticky; left: 60px; background: #f2f2f2; z-index: 10; vertical-align: middle;">姓名</th>
     `;
 
-    // 表头：日期
+    // 表头第一行：月份
     records.forEach(record => {
-        tableHTML += `<th>${record.date}</th>`;
+        const [year, month, day] = record.date.split('-');
+        tableHTML += `<th style="border-bottom: none; color: #666; font-size: 0.9em;">${parseInt(month)}月</th>`;
+    });
+
+    tableHTML += `
+                </tr>
+                <tr>
+    `;
+
+    // 表头第二行：日期
+    records.forEach(record => {
+        const [year, month, day] = record.date.split('-');
+        tableHTML += `<th style="border-top: none; font-size: 1.1em;">${parseInt(day)}日</th>`;
     });
 
     tableHTML += `
@@ -754,9 +767,10 @@ function showDailyAttendanceRecords() {
     `;
 
     // 表体：学生出勤情况
-    students.forEach(student => {
+    students.forEach((student, index) => {
         tableHTML += `<tr>`;
-        tableHTML += `<td style="position: sticky; left: 0; background: #fff; z-index: 1;">${student}</td>`;
+        tableHTML += `<td style="position: sticky; left: 0; background: #fff; z-index: 1; text-align: center;">${index + 1}</td>`;
+        tableHTML += `<td style="position: sticky; left: 60px; background: #fff; z-index: 1;">${student}</td>`;
 
         records.forEach(record => {
             let statusSymbol = '√'; // 默认正常
@@ -806,9 +820,16 @@ function copyDailyAttendanceTableToClipboard() {
     const rows = table.querySelectorAll('tr');
     let csvContent = '';
 
-    rows.forEach((row) => {
+    rows.forEach((row, index) => {
         const cells = row.querySelectorAll('th, td');
         const rowData = [];
+
+        // 如果是表头第二行（日期行），需要在最前面加两个空单元格，以对应第一行的“序号”和“姓名”列（rowspan=2）
+        // 这样复制到Excel时，日期会和月份对齐，而不是错位到姓名列下
+        if (index === 1 && row.closest('thead')) {
+            rowData.push(""); // 序号
+            rowData.push(""); // 姓名
+        }
 
         cells.forEach(cell => {
             let cellText = cell.textContent.trim();
